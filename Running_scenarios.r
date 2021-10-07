@@ -1,12 +1,10 @@
 
 ## ALASKA SCENARIOS FOR SINGLE SEX WITH NO B20% CUTOFF...
-## Version June 17, 2020
+## Version October 7, 2021
 ## Created by Steve Barbeaux E-mail: steve.barbeaux@noaa.gov  Phone: (206) 729-0871 
 ## 
-## Note that for any biological parameter that varies over time you need to rerun the model with the values fixed to the mean as a block out 15 years and rerun your model.
-## (This should be fixed in future models...)
 ##
-## Also in the starter.ss file you should change it to read from the converged .par file 
+## In the starter.ss file you should change it to read from the converged .par file 
 ##   1 # 0=use init values in control file; 1=use ss.par
 ## 
 ## Assumes you already have the forecast parameters already specified appropriately in the forecast.ss for scenario 1, 
@@ -22,7 +20,7 @@
 ##
 ##
 
-Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/Model19.14.48c_T",CYR=2020,SYR=1977,SEXES=1,FLEETS=c(1:3),Scenario2=1,S2_F=0.4,do_fig=TRUE){
+Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/2021 Stock Assessments/2021 Pacific cod/Models/Model19.1",CYR=2021,SYR=1977,FCASTY=15,SEXES=1,FLEETS=c(1:3),Scenario2=1,S2_F=0.4,do_fig=TRUE){
 
 	require(r4ss)
 	require(data.table)
@@ -72,7 +70,8 @@ Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/Model19.14.48c_T",CYR=2020,SYR=
 	scenario_5<-scenario_1
 	copyDirectory(getwd(),paste0(getwd(),"/scenario_5"),recursive=FALSE)
 ## must enter a 0 in for all fisheries
-	catch <- expand.grid(Year=c((CYR+1):(CYR+15)),Seas=1,Fleet=FLEETS,Catch_or_F=0)
+	catch <- expand.grid(Year=c((CYR+1):(CYR+FCASTY)),Seas=1,Fleet=FLEETS,Catch_or_F=0)
+	names(catch)<-names(scenario_5$ForeCatch)
 	scenario_5$ForeCatch <- rbind(scenario_5$ForeCatch,catch)
 	SS_writeforecast(scenario_5, dir = paste0(getwd(),"/scenario_5"), file = "forecast.ss", writeAll = TRUE, overwrite = TRUE)
 
@@ -119,12 +118,12 @@ Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/Model19.14.48c_T",CYR=2020,SYR=
 	
 	summ<-vector("list",length=7)
 	Pcatch<-vector("list",length=7)
-	EYR<- CYR+15
+	EYR<- CYR+FCASTY
 	yr1<- EYR-SYR+3
 	
 	for(i in 1:7){
 		summ[[i]]<-data.table(Yr=SYR:EYR,TOT=data.table(mods1[[i]]$timeseries)[Yr%in%c(SYR:EYR)]$Bio_all,SUMM=data.table(mods1[[i]]$timeseries)[Yr%in%c(SYR:EYR)]$Bio_smry,SSB=data.table(mods1[[i]]$timeseries)[Yr%in%c(SYR:EYR)]$SpawnBio/sex,std=data.table(mods1[[i]]$stdtable)[name%like%"SSB"][3:yr1,]$std/sex,F=data.table(mods1[[i]]$sprseries)[Yr%in%c(SYR:EYR)]$F_report,Catch=data.table(mods1[[i]]$sprseries)[Yr%in%c(SYR:EYR)]$Enc_Catch,SSB_unfished=data.table(mods1[[i]]$derived_quants)[Label=="SSB_unfished"]$Value/sex,model=scen[i])
-	    Pcatch[[i]]<-data.table(Yr=(CYR+1):EYR,Catch=data.table(mods1[[i]]$sprseries)[Yr%in%c((CYR+1):EYR)]$Enc_Catch,Catch_std=data.table(mods1[[i]]$stdtable)[name%like%"ForeCatch_"]$std[1:15], model=scen[i])
+	    Pcatch[[i]]<-data.table(Yr=(CYR+1):EYR,Catch=data.table(mods1[[i]]$sprseries)[Yr%in%c((CYR+1):EYR)]$Enc_Catch,Catch_std=data.table(mods1[[i]]$stdtable)[name%like%"ForeCatch_"]$std[2:FCASTY+1], model=scen[i])
 	
 	}
 
