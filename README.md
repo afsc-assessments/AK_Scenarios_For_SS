@@ -14,8 +14,7 @@
  CYR is the model current year, SYR is the start year for the model, SEXES is the number of sexes in model, fleets= the fleet number in SS for your fisheries,  
  Scenario2 indicates whether you wish to have a different catch for scenario 2 (1= FmaxABC,2= F as S2_F, 3 = specified catch from a   
  formatted csv saved in the root directory named 'Scenario2_catch.csv', must have an entry for each year, season, and fleet for the years   
- that differ from Fmaxabc  
- with columns "Year,Seas,Fleet,Catch_or_F"  
+ that differ from Fmaxabc with columns "Year,Seas,Fleet,Catch_or_F"  
  do_fig whether to plot figures  
  
  Example:  
