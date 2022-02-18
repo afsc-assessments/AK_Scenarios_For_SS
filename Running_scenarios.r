@@ -1,5 +1,5 @@
 
-## ALASKA SCENARIOS FOR SINGLE SEX WITH NO B20% CUTOFF...
+## ALASKA PROJECTION SCENARIOS FOR STOCK SYNTHESIS 3 
 ## Version October 7, 2021
 ## Created by Steve Barbeaux E-mail: steve.barbeaux@noaa.gov  Phone: (206) 729-0871 
 ## 
