@@ -18,7 +18,7 @@
 0 #_Fcast_selex
 2 #_ControlRuleMethod
 0.4 #_BforconstantF
-0.02 #_BfornoF
+0.02 #_BfornoF NOTE!!! Changing this to 0.2 for SSL forage species doesn't work as it changes the slope of the control rule.
 1 #_Flimitfraction
 3 #_N_forecast_loops
 3 #_First_forecast_loop_with_stochastic_recruitment
