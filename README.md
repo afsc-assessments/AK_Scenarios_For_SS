@@ -1,7 +1,7 @@
  <B>ALASKA SCENARIOS FOR SINGLE SEX WITH NO B20% CUTOFF...</B>  
  
  Version October 7, 2021  
- Created by Steve Barbeaux E-mail: steve.barbeaux@noaa.gov  Phone: (206) 729-0871   
+ Created by Steve Barbeaux E-mail: steve.barbeaux@noaa.gov  Phone: ‪(425) 666-9732‬     
  
 
  In the starter.ss file you should change it to read from the converged .par file   
