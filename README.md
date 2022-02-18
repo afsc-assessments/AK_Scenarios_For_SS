@@ -18,3 +18,6 @@
  with columns "Year,Seas,Fleet,Catch_or_F"  
  do_fig whether to plot figures  
  
+ Example:
+ Do_AK_Scenarios(DIR="C:/WORKING_FOLDER/2021 Stock Assessments/2021 Pacific cod/Models/Model19.1",CYR=2021,SYR=1977,FCASTY=15,SEXES=1,FLEETS=c(1:3),Scenario2=1,S2_F=0.4,do_fig=TRUE)
+ 
