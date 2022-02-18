@@ -1,7 +1,9 @@
- <B>ALASKA SCENARIOS FOR SINGLE SEX WITH NO B20% CUTOFF...</B>  
+ <B>Alaska Projection Scenarios for Stock Synthesis...</B>  
  
  Version October 7, 2021  
- Created by Steve Barbeaux E-mail: steve.barbeaux@noaa.gov  Phone: ‪(425) 666-9732‬     
+ Created by Steve Barbeaux E-mail: steve.barbeaux@noaa.gov  Phone: ‪(425) 666-9732‬  
+ 
+ This function performs the 7 Alaska projection scenarios for Stock Synthesis 3 models. It runs the scenarios, saves them to the working directory and produces stock figures for the projections. This function could use some work on generalization and making the figures a bit more ready for the assessment. 
  
 
  In the starter.ss file you should change it to read from the converged .par file   
