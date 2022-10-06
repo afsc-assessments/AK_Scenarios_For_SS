@@ -20,7 +20,8 @@
 ##
 ##
 
-Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/2021 Stock Assessments/2021 Pacific cod/Models/Model19.1",CYR=2021,SYR=1977,FCASTY=15,SEXES=1,FLEETS=c(1:3),Scenario2=1,S2_F=0.4,do_fig=TRUE){
+
+Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12A/PROJ",CYR=2022,SYR=1977,FCASTY=12,SEXES=1,FLEETS=1,Scenario2=1,S2_F=0.4,do_fig=TRUE){
 
 	require(r4ss)
 	require(data.table)
@@ -128,7 +129,7 @@ Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/2021 Stock Assessments/2021 Pac
 	}
 
     summ8<-data.table(Yr=SYR:EYR,TOT=data.table(mods1[[8]]$timeseries)[Yr%in%c(SYR:EYR)]$Bio_all,SUMM=data.table(mods1[[8]]$timeseries)[Yr%in%c(SYR:EYR)]$Bio_smry,SSB=data.table(mods1[[8]]$timeseries)[Yr%in%c(SYR:EYR)]$SpawnBio/sex,std=data.table(mods1[[8]]$stdtable)[name%like%"SSB"][3:yr1,]$std/sex,F=data.table(mods1[[8]]$sprseries)[Yr%in%c(SYR:EYR)]$F_report,Catch=data.table(mods1[[8]]$sprseries)[Yr%in%c(SYR:EYR)]$Enc_Catch,SSB_unfished=data.table(mods1[[8]]$derived_quants)[Label=="SSB_unfished"]$Value/sex,model=scen[8])
-	Pcatch8<-data.table(Yr=(CYR+1):EYR,Catch=data.table(mods1[[8]]$sprseries)[Yr%in%c((CYR+1):EYR)]$Enc_Catch,Catch_std=data.table(mods1[[8]]$stdtable)[name%like%"ForeCatch_"]$std, model=scen[8])
+	Pcatch8<-data.table(Yr=(CYR+1):EYR,Catch=data.table(mods1[[8]]$sprseries)[Yr%in%c((CYR+1):EYR)]$Enc_Catch,Catch_std=data.table(mods1[[8]]$stdtable)[name%like%"ForeCatch_"]$std[1:FCASTY], model=scen[8])
 	## Calculate 2 year projections for catch and F
 	SB100=summ[[1]][Yr==CYR+1]$SSB_unfished
     F40_1=summ[[1]][Yr==CYR+1]$F
@@ -294,9 +295,6 @@ Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/2021 Stock Assessments/2021 Pac
 	return(output)
 }
 
-## Examples
-# profiles<-Do_AK_Scenarios(DIR="C:/WORKING_FOLDER/Model19.14.48c_T",CYR=2019,SYR=1977,SEXES=1,FLEETS=c(1:3),Scenario2=1,S2_F=0.4,do_fig=TRUE)
 
-# profiles<-Do_AK_Scenarios(DIR="Z:/Steve WorkingFolders/BS_COD",CYR=2018,SYR=1977,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
-# profiles<-Do_AK_Scenarios(DIR="C:/WORKING_FOLDER/Turbot",CYR=2020,SYR=1977,SEXES=2,FLEETS=c(1,2),Scenario2=1,S2_F=0.4,do_fig=TRUE)
+#profiles_19.12<-Do_AK_Scenarios(DIR="C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12/PROJ",CYR=2022,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
 
