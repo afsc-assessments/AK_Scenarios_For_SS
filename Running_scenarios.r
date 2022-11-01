@@ -43,7 +43,7 @@ Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMB
 	copyDirectory(getwd(),paste0(getwd(),"/scenario_2"),recursive=FALSE)
 	
     if(Scenario2==2){
-    	scenario_2$SPRtarget <- SC2_F
+    	scenario_2$SPRtarget <- S2_F
     }
 
 	if(Scenario2==3){
