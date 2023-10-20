@@ -111,7 +111,23 @@ Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMB
 		setwd(paste0(DIR,"/",scen[i]))
     	system("ss")
   	}
-    if(SEXES==1) sex=2
+
+## For running on a mac computer you will need to turn off the previous code starting on line 107 and instead use this:
+##	
+##	scen<-c("scenario_1","scenario_2","scenario_3","scenario_4","scenario_5","scenario_6","scenario_7","scenario_8")
+## 
+##      Exe_path <- "/path/Executables/SS_V3_30_21/ss_osx"
+##
+## for(i in 1:8){
+##    file.copy(Exe_path,file.path(Model_path,paste0(scen[i])))
+##    setwd(paste0(DIR,"/",scen[i]))
+##    system("./ss_osx")
+## }
+	
+	
+	
+	
+if(SEXES==1) sex=2
     if(SEXES>1) sex=1
    	setwd(DIR)
 	mods1<-SSgetoutput(dirvec=scen[1:8])
