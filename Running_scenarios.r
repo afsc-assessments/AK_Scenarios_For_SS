@@ -148,6 +148,9 @@ if(SEXES==1) sex=2
 	Pcatch8<-data.table(Yr=(CYR+1):EYR,Catch=data.table(mods1[[8]]$sprseries)[Yr%in%c((CYR+1):EYR)]$Enc_Catch,Catch_std=data.table(mods1[[8]]$stdtable)[name%like%"ForeCatch_"]$std[1:FCASTY], model=scen[8])
 	## Calculate 2 year projections for catch and F
 	SB100=summ[[1]][Yr==CYR+1]$SSB_unfished
+	SB40=data.table(mods1[[1]]$derived_quants)[Label=="SSB_SPR"]$Value/sex
+	SB35=data.table(mods1[[8]]$derived_quants)[Label=="SSB_SPR"]$Value/sex
+	
     F40_1=summ[[1]][Yr==CYR+1]$F
     F35_1=summ[[6]][Yr==CYR+1]$F
     catchABC_1=Pcatch[[1]][Yr==CYR+1]$Catch
@@ -160,7 +163,7 @@ if(SEXES==1) sex=2
     SSB_1<-summ[[1]][Yr==CYR+1]$SSB
     SSB_2<-summ[[1]][Yr==CYR+2]$SSB
 
-    Two_Year=data.table(Yr=c((CYR+1):(CYR+2)),SSB=c(SSB_1,SSB_2),SSB_PER=c(SSB_1/SB100,SSB_2/SB100),SB100=c(SB100,SB100),SB40=c(SB100*0.4,SB100*0.4),SB35=c(SB100*0.35,SB100*0.35),F40=c(F40_1,F40_2),F35=c(F35_1,F35_2),C_ABC=c(catchABC_1,catchABC_2),C_OFL=c(catchOFL_1,catchOFL_2))
+    Two_Year=data.table(Yr=c((CYR+1):(CYR+2)),SSB=c(SSB_1,SSB_2),SSB_PER=c(SSB_1/SB100,SSB_2/SB100),SB100=c(SB100,SB100),SB40=c(SB40,SB40),SB35=c(SB35,SB35),F40=c(F40_1,F40_2),F35=c(F35_1,F35_2),C_ABC=c(catchABC_1,catchABC_2),C_OFL=c(catchOFL_1,catchOFL_2))
 
     ## rbind vectors into tables
 	summ=do.call(rbind,summ)
@@ -181,8 +184,8 @@ if(SEXES==1) sex=2
 		x<-SS_output(getwd())
 		SSB_unfished<-data.table(x$derived_quants)[Label=="SSB_unfished"]$Value/sex
 		
-		y<-data.table(Yr=c(SYR:EYR),TOT=0,SUMM=0,SSB=SSB_unfished*0.4,std=0,F=0,Catch=0,SSB_unfished=SSB_unfished,model="SSB40%")
-		y1<-data.table(Yr=c(SYR:EYR),TOT=0,SUMM=0,SSB=SSB_unfished*0.35,std=0,F=0,Catch=0,SSB_unfished=SSB_unfished,model="SSB35%")
+		y<-data.table(Yr=c(SYR:EYR),TOT=0,SUMM=0,SSB=SB40,std=0,F=0,Catch=0,SSB_unfished=SSB_unfished,model="SSB40%")
+		y1<-data.table(Yr=c(SYR:EYR),TOT=0,SUMM=0,SSB=SB35,std=0,F=0,Catch=0,SSB_unfished=SSB_unfished,model="SSB35%")
 		y2<-data.table(Yr=c(SYR:EYR),TOT=0,SUMM=0,SSB=SSB_unfished*0.2,std=0,F=0,Catch=0,SSB_unfished=SSB_unfished,model="SSB20%")
 		summ2<-rbind(y,y1,y2,summ)
 
