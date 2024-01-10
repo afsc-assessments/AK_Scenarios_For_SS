@@ -22,44 +22,45 @@
 ##
 
 
-Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12A/PROJ",CYR=2022,SYR=1977,FCASTY=12,SEXES=1,FLEETS=1,Scenario2=1,S2_F=0.4,s4_F=0.75,do_fig=TRUE){
-	require(r4ss)
-	require(data.table)
-	require(ggplot2)
-	require(R.utils)
+Do_AK_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12A/PROJ", CYR = 2022, SYR = 1977, FCASTY = 12, SEXES = 1, FLEETS = 1, Scenario2 = 1, S2_F = 0.4, s4_F = 0.75, do_fig = TRUE) {
+  require(r4ss)
+  require(data.table)
+  require(ggplot2)
+  require(R.utils)
 
-	setwd(DIR) ## folder with converged model
-# Define the list of scenarios
-	scenarios <- list(
-  		scenario_1,
-  		modify_scenario(scenario_1, SPRtarget = ifelse(Scenario2 == 2, S2_F, scenario_1$SPRtarget)),  
-  		modify_scenario(scenario_1, Forecast = 4, Fcast_years = c(CYR - 5, CYR - 1)),
-  		modify_scenario(scenario_1, Btarget = s4_F, SPRtarget = s4_F),
-  		modify_scenario(scenario_1, ForeCatch = rbind(scenario_1$ForeCatch, create_zero_catch())),
-  		modify_scenario(scenario_1, Btarget = 0.35, SPRtarget = 0.35, Flimitfraction = 1.0),
-  		modify_scenario(scenario_1, ForeCatch = SS_ForeCatch(SS_output(dir = getwd()), yrs = CYR:(CYR + 2))),
-  		modify_scenario(scenario_1, ForeCatch = SS_ForeCatch(SS_output(dir = getwd()), yrs = CYR:(CYR + 1)))
-	)
+  setwd(DIR) ## folder with converged model
+  
+  # Define the list of scenarios
+  scenarios <- list(
+    scenario_1,
+    modify_scenario(scenario_1, SPRtarget = ifelse(Scenario2 == 2, S2_F, scenario_1$SPRtarget)),
+    modify_scenario(scenario_1, Forecast = 4, Fcast_years = c(CYR - 5, CYR - 1)),
+    modify_scenario(scenario_1, Btarget = s4_F, SPRtarget = s4_F),
+    modify_scenario(scenario_1, ForeCatch = rbind(scenario_1$ForeCatch, create_zero_catch())),
+    modify_scenario(scenario_1, Btarget = 0.35, SPRtarget = 0.35, Flimitfraction = 1.0),
+    modify_scenario(scenario_1, ForeCatch = SS_ForeCatch(SS_output(dir = getwd()), yrs = CYR:(CYR + 2))),
+    modify_scenario(scenario_1, ForeCatch = SS_ForeCatch(SS_output(dir = getwd()), yrs = CYR:(CYR + 1)))
+  )
 
-# Write the scenarios to separate directories and run them
-	for (i in 1:length(scenarios)) {
-  		scenario <- scenarios[[i]]
-  
-  # Create a directory for the scenario
-  		dir_name <- paste0(getwd(), "/scenario_", i)
-  		dir.create(dir_name)
-  
-  # Copy necessary files to the scenario directory
-  		file.copy(from = getwd(), to = dir_name, recursive = FALSE)
-  
-  # Write the forecast file for the scenario
-  		SS_writeforecast(scenario, dir = dir_name, file = "forecast.ss", writeAll = TRUE, overwrite = TRUE)
-  
-  # Set the working directory to the scenario directory
-  		setwd(dir_name)
+  # Write the scenarios to separate directories and run them
+  for (i in 1:length(scenarios)) {
+    scenario <- scenarios[[i]]
+    
+    # Create a directory for the scenario
+    dir_name <- file.path(getwd(), paste0("scenario_", i))
+    dir.create(dir_name)
+    
+    # Copy necessary files to the scenario directory
+    file.copy(from = getwd(), to = dir_name, recursive = FALSE)
+    
+    # Write the forecast file for the scenario
+    SS_writeforecast(scenario, dir = dir_name, file = "forecast.ss", writeAll = TRUE, overwrite = TRUE)
+    
+    # Set the working directory to the scenario directory
+    setwd(dir_name)
   
   # Run the scenario
-  		run(verbose = FALSE)
+  		r4ss::run(verbose = FALSE)
 	}
 	
 # Run the forecast scenarios	
@@ -302,5 +303,5 @@ if(SEXES==1) sex=2
 }
 
 
-#profiles_M23.1.0.d<-Do_AK_Scenarios(DIR="C:/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
+profiles_M23.1.0.d<-Do_AK_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)/
 
