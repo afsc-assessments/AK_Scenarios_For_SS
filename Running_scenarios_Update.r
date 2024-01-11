@@ -1,6 +1,6 @@
 
-## ALASKA PROJECTION SCENARIOS FOR STOCK SYNTHESIS 3 
-## Version October 7, 2021
+## ALASKA PROJECTION SCENARIOS FOR STOCK SYNTHESIS 3 FOR TIER 3 MODELS WITH PARALLEL COMPUTING
+## Version JAN 11, 2024
 ## Created by Steve Barbeaux E-mail: steve.barbeaux@noaa.gov  Phone: (206) 729-0871 
 ## 
 ##
@@ -9,25 +9,27 @@
 ## 
 ## Assumes you already have the forecast parameters already specified appropriately in the forecast.ss for scenario 1, 
 ## Make sure there is no catch or F already specified in the forecast file.
+## You will also need to make a seperate folder named PROJ and copy your final model run into the folder, 
+## this folder will be the folder you point to using DIR
 ##
-## DIR is the model directory
+## DIR is the model directory (see above)
 ## CYR is the model current year, SYR is the start year for the model, SEXES is the number of sexes in model, fleets= the fleet number in SS for your fisheries,
 ## Scenario2 indicates whether you wish to have a different catch for scenario 2 (1= FmaxABC,2= F as S2_F, 3 = specified catch from a 
 ## formatted csv saved in the root directory named 'Scenario2_catch.csv', must have an entry for each year, season, and fleet for the years 
 ## that differ from Fmaxabc
 ## with columns "Year,Seas,Fleet,Catch_or_F"
-## s4_F is the f for scenario 4, defaults to 0.75, should be 0.65 for some species check your requirments
+## s4_F is the F for scenario 4, defaults to 0.75, should be 0.65 for some species check your requirments
 ## do_fig whether to plot figures
 ##
 ##
 
 
-Do_AK_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12A/PROJ", CYR = 2022, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, S2_F = 0.4, s4_F = 0.75, do_fig = TRUE) {
+Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12A/PROJ", CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, S2_F = 0.4, s4_F = 0.75, do_fig = TRUE) {
 	library(r4ss)
 	library(data.table)
 	library(ggplot2)
 	library(R.utils)
-
+	.DIR <- DIR
    setwd(DIR) ## folder with converged model
    scenario_1 <- SS_readforecast(file = "forecast.ss")
 #   # Define the list of scenarios
@@ -64,12 +66,15 @@ Do_AK_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NO
 	run_scenario <- function(scenario) {
 		library(r4ss)
 		library(R.utils)
-  		scenario_C<-scenario_1
+		
+		dir <- get(".DIR", envir = parent.frame())
+  		
+		scenario_C <- SS_readforecast(file = file.path(dir,"scenario_1","forecast.ss"))
 
   # Create a directory for the scenario
-  		dir_name <- file.path(DIR, scenario)
+  		dir_name <- file.path(dir, scenario)
   		dir.create(dir_name, recursive = TRUE, showWarnings = FALSE)
-  		copyDirectory(DIR,file.path(DIR,scenario),recursive=FALSE)
+  		copyDirectory(dir,dir_name,recursive=FALSE)
   
   # Modify the scenario attributes based on the scenario number
   		if (scenario == 'scenario_2') {
@@ -88,7 +93,7 @@ Do_AK_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NO
 			scenario_C$SPRtarget <- s4_F
   		} else if (scenario == 'scenario_5') {
 			catch <- expand.grid(Year=c((CYR+1):(CYR+FCASTY)),Seas=1,Fleet=FLEETS,Catch_or_F=0)
-			names(catch)<-names(scenario_5$ForeCatch)
+			names(catch)<-names(scenario_C$ForeCatch)
 			scenario_C$ForeCatch <- rbind(scenario_C$ForeCatch,catch)
   		} else if (scenario == 'scenario_6') {
   			scenario_C$Btarget   <- 0.35
@@ -98,13 +103,13 @@ Do_AK_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NO
 			scenario_C$Btarget   <- 0.35
 			scenario_C$SPRtarget <- 0.35
 			scenario_C$Flimitfraction <- 1.0
-    		x<-SS_output(dir=file.path(DIR,"scenario_1"))
+    		x<-SS_output(dir=file.path(dir,"scenario_1"))
 			scenario_C$ForeCatch<-SS_ForeCatch(x,yrs=CYR:(CYR+2))
   		} else if (scenario == 'scenario_8') {
     		scenario_C$Btarget   <- 0.35
 			scenario_C$SPRtarget <- 0.35
 			scenario_C$Flimitfraction <- 1.0
-			x<-SS_output(dir=file.path(DIR,"scenario_1"))
+			x<-SS_output(dir=file.path(dir,"scenario_1"))
 			scenario_C$ForeCatch<-SS_ForeCatch(x,yrs=CYR:(CYR+1))
 		}
   # Write the modified scenario to the scenario directory
@@ -117,7 +122,7 @@ Do_AK_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NO
 	}
 
 # Run scenarios in parallel
-	foreach(scenario = scenarios) %dopar% {
+	foreach(scenario = scenarios, .export = '.DIR') %dopar% {
   		run_scenario(scenario)
 	}
 
@@ -125,18 +130,18 @@ Do_AK_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NO
 	stopImplicitCluster()
 
 ## Get the output from each scenario
-	if(SEXES==1) sex=2
-    	if(SEXES>1) sex=1
+	if(SEXES==1) { sex=2 } else sex=1
+	
 	
 	setwd(DIR)
 	scenarios <- c("scenario_1", "scenario_2", "scenario_3", "scenario_4", "scenario_5", "scenario_6", "scenario_7", "scenario_8")
 	mods1<-SSgetoutput(dirvec=scenarios[1:8])
 
-
 # Calculate the year index for the summary statistics
 	EYR<- CYR+FCASTY
 	yr1<- EYR-SYR+3
 
+    
    	# Calculate summary statistics for each scenario
 	summ <- lapply(seq_along(mods1), function(i) {
 		mod <- mods1[[i]]
@@ -173,7 +178,7 @@ Do_AK_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NO
 	catchABC_1 <- Pcatch[[1]][Yr == CYR + 1]$Catch
 	catchOFL_1 <- Pcatch[[6]][Yr == CYR + 1]$Catch
 	F40_2 <- summ[[1]][Yr == CYR + 2]$F
-	F35_2 <- summ8[Yr == CYR + 2]$F
+	F35_2 <- summ[[8]][Yr == CYR + 2]$F
 	catchABC_2 <- Pcatch[[1]][Yr == CYR + 2]$Catch
 	catchOFL_2 <- Pcatch[[8]][Yr == CYR + 2]$Catch
 	SSB_1 <- summ[[1]][Yr == CYR + 1]$SSB
@@ -213,7 +218,8 @@ Do_AK_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NO
 	)
 
 	output$Tables <- BC
-
+		
+	
 ## if figures are to be made do the following	
 	if(do_fig){
 
@@ -312,12 +318,13 @@ Do_AK_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NO
 			scenarios_P3<-c(scenarios_P2,scenarios_P[i])
   			plot_data <- summ2[model %in% scenarios_P3]
 			
-		plot<-ggplot(plot_data,aes(x=Yr,y=SSB,size=model,color=model,linetype=model))+
+		plot<-ggplot(plot_data,aes(x=Yr,y=SSB,linewidth=model,fill=model,color=model,linetype=model))+
 			geom_line()+theme_bw(base_size=16)+lims(y=c(0,max(summ2$UCI)),x=c(CYR-1,EYR))+
-			geom_ribbon(aes(ymin=LCI, ymax=UCI,linetype=model), alpha=0.2,color="black",size=0.2)+
+			geom_ribbon(aes(ymin=LCI, ymax=UCI), alpha=0.2,color=NA)+
 			scale_linetype_manual(values=c(rep(1,3),(i+1)),name="Scenarios")+
         	scale_color_manual(values=c(pcol[1:3],pcol[i+3]),name="Scenarios")+
-        	scale_size_manual(values=c(rep(1.5,3),1),name="Scenarios")+labs(y="Spawning biomass (t)",x="Year",title="Projections")
+			scale_fill_manual(values=c(pcol[1:3],pcol[i+3]),name="Scenarios")+
+        	scale_linewidth_manual(values=c(rep(1.5,3),1),name="Scenarios")+labs(y="Spawning biomass (t)",x="Year",title="Projections")
 	
     			Figs_SSB[[scenarios_P[i]]] <- plot
 		}
@@ -343,12 +350,13 @@ for (i in 1:length(scenarios_P)){
 			scenarios_P3<-c(scenarios_P2,scenarios_P[i])
   			plot_data <- Pcatch2[model %in% scenarios_P3]
 			
-		plot<-ggplot(plot_data,aes(x=Yr,y=Catch,size=model,color=model,linetype=model))+
+		plot<-ggplot(plot_data,aes(x=Yr,y=Catch,linewidth=model,fill=model,color=model,linetype=model))+
 			geom_line()+theme_bw(base_size=16)+lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR-1,EYR))+
-			geom_ribbon(aes(ymin=LCI, ymax=UCI,linetype=model), alpha=0.2,color="black",size=0.2)+
+			geom_ribbon(aes(ymin=LCI, ymax=UCI), alpha=0.2,color=NA)+
 			scale_linetype_manual(values=c(rep(1,2),(i+1)),name="Scenarios")+
         	scale_color_manual(values=c(pcol[1:2],pcol[i+3]),name="Scenarios")+
-			scale_size_manual(values=c(rep(1.5,2),1),name="Scenarios")+labs(y="Catch (t)",x="Year",title="Projections")
+			scale_fill_manual(values=c(pcol[1:2],pcol[i+3]),name="Scenarios")+
+			scale_linewidth_manual(values=c(rep(1.5,2),1),name="Scenarios")+labs(y="Catch (t)",x="Year",title="Projections")
 	
     			Figs_Catch[[scenarios_P[i]]] <- plot
 		}
@@ -360,5 +368,4 @@ for (i in 1:length(scenarios_P)){
 }
 
 
-##profiles_M23.1.0.d<-Do_AK_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
-
+## EXAMPLE:  profiles_M23.1.0.d<-Do_AK_TIER_3_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
