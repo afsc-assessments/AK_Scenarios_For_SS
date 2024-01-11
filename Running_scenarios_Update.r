@@ -22,99 +22,147 @@
 ##
 
 
-Do_AK_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12A/PROJ", CYR = 2022, SYR = 1977, FCASTY = 12, SEXES = 1, FLEETS = 1, Scenario2 = 1, S2_F = 0.4, s4_F = 0.75, do_fig = TRUE) {
-  require(r4ss)
-  require(data.table)
-  require(ggplot2)
-  require(R.utils)
+Do_AK_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12A/PROJ", CYR = 2022, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, S2_F = 0.4, s4_F = 0.75, do_fig = TRUE) {
+	library(r4ss)
+	library(data.table)
+	library(ggplot2)
+	library(R.utils)
 
-  setwd(DIR) ## folder with converged model
-  
-  # Define the list of scenarios
-  scenarios <- list(
-    scenario_1,
-    modify_scenario(scenario_1, SPRtarget = ifelse(Scenario2 == 2, S2_F, scenario_1$SPRtarget)),
-    modify_scenario(scenario_1, Forecast = 4, Fcast_years = c(CYR - 5, CYR - 1)),
-    modify_scenario(scenario_1, Btarget = s4_F, SPRtarget = s4_F),
-    modify_scenario(scenario_1, ForeCatch = rbind(scenario_1$ForeCatch, create_zero_catch())),
-    modify_scenario(scenario_1, Btarget = 0.35, SPRtarget = 0.35, Flimitfraction = 1.0),
-    modify_scenario(scenario_1, ForeCatch = SS_ForeCatch(SS_output(dir = getwd()), yrs = CYR:(CYR + 2))),
-    modify_scenario(scenario_1, ForeCatch = SS_ForeCatch(SS_output(dir = getwd()), yrs = CYR:(CYR + 1)))
-  )
+   setwd(DIR) ## folder with converged model
+   scenario_1 <- SS_readforecast(file = "forecast.ss")
+#   # Define the list of scenarios
 
-  # Write the scenarios to separate directories and run them
-  for (i in 1:length(scenarios)) {
-    scenario <- scenarios[[i]]
+ 	copyDirectory(DIR,file.path(DIR,"scenario_1"),recursive=FALSE)
+ 	scenario_1$Btarget   <- 0.4
+ 	scenario_1$SPRtarget <- 0.4
+ 	scenario_1$Flimitfraction <- 1.0
+ 	SS_writeforecast(scenario_1, dir = file.path(DIR,"scenario_1"), file = "forecast.ss", writeAll = TRUE, overwrite = TRUE)
     
-    # Create a directory for the scenario
-    dir_name <- file.path(getwd(), paste0("scenario_", i))
-    dir.create(dir_name)
-    
-    # Copy necessary files to the scenario directory
-    file.copy(from = getwd(), to = dir_name, recursive = FALSE)
-    
-    # Write the forecast file for the scenario
-    SS_writeforecast(scenario, dir = dir_name, file = "forecast.ss", writeAll = TRUE, overwrite = TRUE)
-    
-    # Set the working directory to the scenario directory
-    setwd(dir_name)
+	FCASTY<-scenario_1$Nforecastyrs
+   
+   setwd(file.path(DIR,"scenario_1"))
+
+## have to run scenario 1 first to get the forecast parameters for scenarios 6 and 7
+   r4ss::run(exe = "ss", skipfinished = FALSE, verbose = TRUE)
+
+## setting up parallel computing    
+	library(parallel)
+# Get the number of available cores
+	num_cores <- detectCores()
+	if(num_cores>8)num_cores=8
+	library(doParallel)
+	library(foreach)
+
+# Set the number of cores to be used for parallel computing
+
+	registerDoParallel(cores = num_cores)
+
+# Define the list of scenarios
+	scenarios <- c("scenario_2", "scenario_3", "scenario_4", "scenario_5", "scenario_6", "scenario_7", "scenario_8")
+
+# Create a function to run a scenario
+	run_scenario <- function(scenario) {
+		library(r4ss)
+		library(R.utils)
+  		scenario_C<-scenario_1
+
+  # Create a directory for the scenario
+  		dir_name <- file.path(DIR, scenario)
+  		dir.create(dir_name, recursive = TRUE, showWarnings = FALSE)
+  		copyDirectory(DIR,file.path(DIR,scenario),recursive=FALSE)
   
-  # Run the scenario
-  		r4ss::run(verbose = FALSE)
-	}
+  # Modify the scenario attributes based on the scenario number
+  		if (scenario == 'scenario_2') {
 	
-# Run the forecast scenarios	
-if(SEXES==1) sex=2
-    if(SEXES>1) sex=1
+    		if(Scenario2==2){
+    			scenario_C$SPRtarget <- S2_F
+    		}
+			if(Scenario2==3){
+				scenario_C$ForeCatch <- read.csv("Scenario2_catch.csv",header=T)
+    		}
+  		} else if (scenario == 'scenario_3') {
+    		scenario_C$Forecast<-4
+			scenario_C$Fcast_years [c(3,4)]<-c(CYR-5, CYR-1)
+  		} else if (scenario == 'scenario_4') {
+			scenario_C$Btarget <- s4_F
+			scenario_C$SPRtarget <- s4_F
+  		} else if (scenario == 'scenario_5') {
+			catch <- expand.grid(Year=c((CYR+1):(CYR+FCASTY)),Seas=1,Fleet=FLEETS,Catch_or_F=0)
+			names(catch)<-names(scenario_5$ForeCatch)
+			scenario_C$ForeCatch <- rbind(scenario_C$ForeCatch,catch)
+  		} else if (scenario == 'scenario_6') {
+  			scenario_C$Btarget   <- 0.35
+			scenario_C$SPRtarget <- 0.35
+			scenario_C$Flimitfraction <- 1.0
+  		} else if (scenario == 'scenario_7') {
+			scenario_C$Btarget   <- 0.35
+			scenario_C$SPRtarget <- 0.35
+			scenario_C$Flimitfraction <- 1.0
+    		x<-SS_output(dir=file.path(DIR,"scenario_1"))
+			scenario_C$ForeCatch<-SS_ForeCatch(x,yrs=CYR:(CYR+2))
+  		} else if (scenario == 'scenario_8') {
+    		scenario_C$Btarget   <- 0.35
+			scenario_C$SPRtarget <- 0.35
+			scenario_C$Flimitfraction <- 1.0
+			x<-SS_output(dir=file.path(DIR,"scenario_1"))
+			scenario_C$ForeCatch<-SS_ForeCatch(x,yrs=CYR:(CYR+1))
+		}
+  # Write the modified scenario to the scenario directory
+  		SS_writeforecast(scenario_C, dir = dir_name, file = "forecast.ss", writeAll = TRUE, overwrite = TRUE)
+  
+  # Set the working directory to the scenario directory
+  		setwd(dir_name)
+    # Run the scenario
+  		r4ss::run(exe = "ss", skipfinished = FALSE, verbose = FALSE)
+	}
+
+# Run scenarios in parallel
+	foreach(scenario = scenarios) %dopar% {
+  		run_scenario(scenario)
+	}
+
+# Stop parallel computing
+	stopImplicitCluster()
+
+## Get the output from each scenario
+	if(SEXES==1) sex=2
+    	if(SEXES>1) sex=1
 	
 	setwd(DIR)
-	mods1<-SSgetoutput(dirvec=scen[1:8])
+	scenarios <- c("scenario_1", "scenario_2", "scenario_3", "scenario_4", "scenario_5", "scenario_6", "scenario_7", "scenario_8")
+	mods1<-SSgetoutput(dirvec=scenarios[1:8])
+
+
+# Calculate the year index for the summary statistics
+	EYR<- CYR+FCASTY
+	yr1<- EYR-SYR+3
 
    	# Calculate summary statistics for each scenario
-	summ <- lapply(mods1[1:7], function(mod) {
-  		Yr <- SYR:EYR
-  		TOT <- data.table(mod$timeseries)[Yr %in% Yr]$Bio_all
-  		SUMM <- data.table(mod$timeseries)[Yr %in% Yr]$Bio_smry
-  		SSB <- data.table(mod$timeseries)[Yr %in% Yr]$SpawnBio / sex
+	summ <- lapply(seq_along(mods1), function(i) {
+		mod <- mods1[[i]]
+  		Yrs <- SYR:EYR
+  		TOT <- data.table(mod$timeseries)[Yr %in% Yrs]$Bio_all
+  		SUMM <- data.table(mod$timeseries)[Yr %in% Yrs]$Bio_smry
+  		SSB <- data.table(mod$timeseries)[Yr %in% Yrs]$SpawnBio / sex
   		std <- data.table(mod$stdtable)[name %like% "SSB"][3:yr1, ]$std / sex
-  		F <- data.table(mod$sprseries)[Yr %in% Yr]$F_report
-  		Catch <- data.table(mod$sprseries)[Yr %in% Yr]$Enc_Catch
+  		F <- data.table(mod$sprseries)[Yr %in% Yrs]$F_report
+  		Catch <- data.table(mod$sprseries)[Yr %in% Yrs]$Enc_Catch
   		SSB_unfished <- data.table(mod$derived_quants)[Label == "SSB_unfished"]$Value / sex
-  		model <- scen[i]
+  		model <- scenarios[i]
   
-  		data.table(Yr = Yr, TOT = TOT, SUMM = SUMM, SSB = SSB, std = std, F = F, Catch = Catch, SSB_unfished = SSB_unfished, model = model)
+  		data.table(Yr = Yrs, TOT = TOT, SUMM = SUMM, SSB = SSB, std = std, F = F, Catch = Catch, SSB_unfished = SSB_unfished, model = model)
 	})
 
 # Calculate catch projections for each scenario
-	Pcatch <- lapply(mods1[1:7], function(mod) {
-  		Yr <- (CYR + 1):EYR
-  		Catch <- data.table(mod$sprseries)[Yr %in% Yr]$Enc_Catch
-  		Catch_std <- data.table(mod$stdtable)[name %like% "ForeCatch_"]$std[2:FCASTY + 1]
-  		model <- scen[i]
+	Pcatch <- lapply(seq_along(mods1), function(i) {
+		mod <- mods1[[i]]
+  		Yrs <- (CYR + 1):EYR
+  		Catch <- data.table(mod$sprseries)[Yr %in% Yrs]$Enc_Catch
+  		Catch_std <- data.table(mod$stdtable)[name %like% "ForeCatch_"]$std
+  		model <- scenarios[i]
   
-		data.table(Yr = Yr, Catch = Catch, Catch_std = Catch_std, model = model)
+		data.table(Yr = Yrs, Catch = Catch, Catch_std = Catch_std, model = model)
 	})
-
-# Calculate summary statistics for scenario 8
-	summ8 <- data.table(
-  		Yr = SYR:EYR,
-  		TOT = data.table(mods1[[8]]$timeseries)[Yr %in% Yr]$Bio_all,
-  		SUMM = data.table(mods1[[8]]$timeseries)[Yr %in% Yr]$Bio_smry,
-  		SSB = data.table(mods1[[8]]$timeseries)[Yr %in% Yr]$SpawnBio / sex,
-  		std = data.table(mods1[[8]]$stdtable)[name %like% "SSB"][3:yr1, ]$std / sex,
-  		F = data.table(mods1[[8]]$sprseries)[Yr %in% Yr]$F_report,
-  		Catch = data.table(mods1[[8]]$sprseries)[Yr %in% Yr]$Enc_Catch,
-  		SSB_unfished = data.table(mods1[[8]]$derived_quants)[Label == "SSB_unfished"]$Value / sex,
-  		model = scen[8]
-	)
-
-# Calculate catch projections for scenario 8
-	Pcatch8 <- data.table(
-  		Yr = (CYR + 1):EYR,
- 		Catch = data.table(mods1[[8]]$sprseries)[Yr %in% ((CYR + 1):EYR)]$Enc_Catch,
-  		Catch_std = data.table(mods1[[8]]$stdtable)[name %like% "ForeCatch_"]$std[1:FCASTY],
-  		model = scen[8]
-	)
 
 # Calculate 2-year projections for catch and F
 	SB100 <- summ[[1]][Yr == CYR + 1]$SSB_unfished
@@ -127,7 +175,7 @@ if(SEXES==1) sex=2
 	F40_2 <- summ[[1]][Yr == CYR + 2]$F
 	F35_2 <- summ8[Yr == CYR + 2]$F
 	catchABC_2 <- Pcatch[[1]][Yr == CYR + 2]$Catch
-	catchOFL_2 <- Pcatch8[Yr == CYR + 2]$Catch
+	catchOFL_2 <- Pcatch[[8]][Yr == CYR + 2]$Catch
 	SSB_1 <- summ[[1]][Yr == CYR + 1]$SSB
 	SSB_2 <- summ[[1]][Yr == CYR + 2]$SSB
 
@@ -144,9 +192,12 @@ if(SEXES==1) sex=2
   		C_OFL = c(catchOFL_1, catchOFL_2)
 	)
 # Combine summary statistics and catch projections into tables
-	summ <- do.call(rbind, summ)
+	summ   <- do.call(rbind, summ)
 	Pcatch <- do.call(rbind, Pcatch)
 
+	summ   <- summ[model!="scenario_8"]
+	Pcatch <- Pcatch[model!="scenario_8"]
+	
 # Create output list with SSB, CATCH, and Two_year tables
 	output <- list(
   		SSB = summ,
@@ -162,9 +213,12 @@ if(SEXES==1) sex=2
 	)
 
 	output$Tables <- BC
-	
+
+## if figures are to be made do the following	
 	if(do_fig){
-		
+
+	SSB_unfished<-data.table(mods1[[1]]$derived_quants)[Label=="SSB_unfished"]$Value/sex
+
 # Calculate upper and lower confidence intervals for SSB
 		summ2 <- data.table(
   			Yr = c(SYR:EYR),
@@ -236,27 +290,36 @@ if(SEXES==1) sex=2
 
 ## SSB_Figures
 # Define the scenarios to plot
-		scenarios <- unique(summ2$model)[1:10]
-
+		#scenarios_P <- unique(summ2$model)[1:10]
+        SSB_reference <- summ2[!model%like%'scenario_']
 # Create a list to store the plots
 		Figs_SSB <- list()
 
-# Iterate over each scenario and create the plot
-		for (scenario in scenarios) {
-  			plot_data <- summ2[model %in% scenario]
-  
-  			plot <- ggplot(plot_data, aes(x = Yr, y = SSB, size = model, color = model, linetype = model, fill = model)) +
-    			geom_line() +
-    			theme_bw(base_size = 16) +
-    			lims(y = c(0, max(summ2$UCI)), x = c(CYR - 1, EYR)) +
-    			geom_ribbon(aes(ymin = LCI, ymax = UCI, linetype = model), alpha = 0.2, color = "black", size = 0.2) +
-    			scale_linetype_manual(values = c(rep(1, 3), 2:8), name = "Scenarios") +
-    			scale_fill_manual(values = c("dark green", "orange", "red", 2:8), name = "Scenarios") +
-    			scale_color_manual(values = c("dark green", "orange", "red", 2:8), name = "Scenarios") +
-    			scale_size_manual(values = c(rep(1.5, 3), rep(1, 7)), name = "Scenarios") +
-    			labs(y = "Spawning biomass (t)", x = "Year", title = paste("Projections", scenario))
-  
-  			Figs_SSB[[scenario]] <- plot
+		Figs_SSB[['ALL']]<-ggplot(summ2[model%in%unique(summ2$model)[1:10]],aes(x=Yr,y=SSB,size=model,color=model,linetype=model))+
+		geom_line()+theme_bw(base_size=16)+lims(y=c(0,max(summ2$UCI)),x=c(CYR-1,EYR))+
+		scale_linetype_manual(values=c(rep(1,3),2:8),name="Scenarios")+
+        scale_color_manual(values=c("dark green","orange","red",2:6,8,9),name="Scenarios")+
+        scale_size_manual(values=c(rep(1.5,3),rep(1,7)),name="Scenarios")+labs(y="Spawning biomass (t)",x="Year",title="Projections")
+	
+
+# Iterate over each individual scenario and create the plot
+ 		scenarios_P<-unique(summ$model)
+ 		scenarios_P2<-as.character(unique(summ2$model)[1:3])
+		
+		pcol<-c("dark green","orange","red",2:6,8,9)
+
+		for (i in 1:length(scenarios_P)){
+			scenarios_P3<-c(scenarios_P2,scenarios_P[i])
+  			plot_data <- summ2[model %in% scenarios_P3]
+			
+		plot<-ggplot(plot_data,aes(x=Yr,y=SSB,size=model,color=model,linetype=model))+
+			geom_line()+theme_bw(base_size=16)+lims(y=c(0,max(summ2$UCI)),x=c(CYR-1,EYR))+
+			geom_ribbon(aes(ymin=LCI, ymax=UCI,linetype=model), alpha=0.2,color="black",size=0.2)+
+			scale_linetype_manual(values=c(rep(1,3),(i+1)),name="Scenarios")+
+        	scale_color_manual(values=c(pcol[1:3],pcol[i+3]),name="Scenarios")+
+        	scale_size_manual(values=c(rep(1.5,3),1),name="Scenarios")+labs(y="Spawning biomass (t)",x="Year",title="Projections")
+	
+    			Figs_SSB[[scenarios_P[i]]] <- plot
 		}
 ## Catch Figures
 # Define the scenarios to plot
@@ -265,35 +328,29 @@ if(SEXES==1) sex=2
 # Create a list to store the plots
 		Figs_Catch <- list()
 
-# Create the "C_ALL" plot
-		C_ALL <- ggplot(Pcatch2[model %in% scenarios], aes(x = Yr, y = Catch, size = model, color = model, linetype = model)) +
-  			geom_line() +
-  			theme_bw(base_size = 16) +
-  			lims(y = c(0, max(Pcatch2$UCI)), x = c(CYR + 1, EYR)) +
-  			scale_linetype_manual(values = c(rep(1, 2), 2:8), name = "Scenarios") +
-  			scale_color_manual(values = c("dark green", "orange", 2:6, 8, 9), name = "Scenarios") +
-  			scale_size_manual(values = c(rep(1.5, 2), rep(1, 7)), name = "Scenarios") +
-  			labs(y = "Catch (t)", x = "Year", title = "Projections")
+		Figs_Catch[['ALL']]<-ggplot(Pcatch2[model%in%unique(Pcatch2$model)[1:9]],aes(x=Yr,y=Catch,size=model,color=model,linetype=model))+
+		geom_line()+theme_bw(base_size=16)+lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR+1,EYR))+
+		scale_linetype_manual(values=c(rep(1,2),2:8),name="Scenarios")+
+        scale_color_manual(values=c("dark green","orange",2:6,8,9),name="Scenarios")+
+        scale_size_manual(values=c(rep(1.5,2),rep(1,7)),name="Scenarios")+labs(y="Catch (t)",x="Year",title="Projections")
 
-		Figs_Catch$C_ALL <- C_ALL
+
 
 # Create the remaining plots
-		for (i in 1:6) {
-  			scenario <- scenarios[i]
-  			plot_data <- Pcatch2[model %in% scenario]
-  
-  			plot <- ggplot(plot_data, aes(x = Yr, y = Catch, size = model, color = model, linetype = model, fill = model)) +
-    			geom_line() +
-    			theme_bw(base_size = 16) +
-    			lims(y = c(0, max(Pcatch2$UCI)), x = c(CYR + 1, EYR)) +
-    			geom_ribbon(aes(ymin = LCI, ymax = UCI, linetype = model), alpha = 0.2, color = "black", size = 0.2) +
-    			scale_linetype_manual(values = c(rep(1, 2), i + 1), name = "Scenarios") +
-    			scale_fill_manual(values = c("dark green", "orange", i + 1), name = "Scenarios") +
-    			scale_color_manual(values = c("dark green", "orange", i + 1), name = "Scenarios") +
-    			scale_size_manual(values = c(rep(1.5, 2), rep(1, 7)), name = "Scenarios") +
-    			labs(y = "Catch (t)", x = "Year", title = paste("Projections Scenario", i + 1))
-  
-  			Figs_Catch[[paste0("C_", i)]] <- plot
+scenarios_P2<-as.character(unique(Pcatch2$model)[1:2])
+
+for (i in 1:length(scenarios_P)){
+			scenarios_P3<-c(scenarios_P2,scenarios_P[i])
+  			plot_data <- Pcatch2[model %in% scenarios_P3]
+			
+		plot<-ggplot(plot_data,aes(x=Yr,y=Catch,size=model,color=model,linetype=model))+
+			geom_line()+theme_bw(base_size=16)+lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR-1,EYR))+
+			geom_ribbon(aes(ymin=LCI, ymax=UCI,linetype=model), alpha=0.2,color="black",size=0.2)+
+			scale_linetype_manual(values=c(rep(1,2),(i+1)),name="Scenarios")+
+        	scale_color_manual(values=c(pcol[1:2],pcol[i+3]),name="Scenarios")+
+			scale_size_manual(values=c(rep(1.5,2),1),name="Scenarios")+labs(y="Catch (t)",x="Year",title="Projections")
+	
+    			Figs_Catch[[scenarios_P[i]]] <- plot
 		}
 
 	output$FIGS <- list(Figs_SSB, Figs_Catch)
@@ -303,5 +360,5 @@ if(SEXES==1) sex=2
 }
 
 
-profiles_M23.1.0.d<-Do_AK_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)/
+##profiles_M23.1.0.d<-Do_AK_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
 
