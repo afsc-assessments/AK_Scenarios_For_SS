@@ -25,12 +25,25 @@
 
 
 Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12A/PROJ", CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, S2_F = 0.4, s4_F = 0.75, do_fig = TRUE) {
-	library(r4ss)
-	library(data.table)
-	library(ggplot2)
-	library(R.utils)
+
+# Check if the specified directory exists
+  	if (!dir.exists(DIR)) {
+    	stop("Error: The specified directory does not exist.")
+  	}
+
+ ## Specify the libraries to load
+	libraries <- c("r4ss", "data.table", "ggplot2", "R.utils", "parallel", "doParallel", "foreach")
+
+# Loop through the libraries and load them if they don't exist
+	for (lib in libraries) {
+  		if (!require(lib, character.only = TRUE)) {
+    		install.packages(lib)  # Install the library if it is not already installed
+    		library(lib, character.only = TRUE)  # Load the library
+  		}
+	}
+
 	.DIR <- DIR
-   setwd(DIR) ## folder with converged model
+    setwd(DIR) ## folder with converged model
    scenario_1 <- SS_readforecast(file = "forecast.ss")
 #   # Define the list of scenarios
 
@@ -48,13 +61,10 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESS
    r4ss::run(exe = "ss", skipfinished = FALSE, verbose = TRUE)
 
 ## setting up parallel computing    
-	library(parallel)
-# Get the number of available cores
+	# Get the number of available cores
 	num_cores <- detectCores()
 	if(num_cores>8)num_cores=8
-	library(doParallel)
-	library(foreach)
-
+	
 # Set the number of cores to be used for parallel computing
 
 	registerDoParallel(cores = num_cores)
@@ -369,3 +379,4 @@ for (i in 1:length(scenarios_P)){
 
 
 ## EXAMPLE:  profiles_M23.1.0.d<-Do_AK_TIER_3_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
+profiles_M23.1.0.d<-Do_AK_TIER_3_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
