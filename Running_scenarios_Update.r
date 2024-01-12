@@ -311,11 +311,11 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESS
 # Create a list to store the plots
 		Figs_SSB <- list()
 
-		Figs_SSB[['ALL']]<-ggplot(summ2[model%in%unique(summ2$model)[1:10]],aes(x=Yr,y=SSB,size=model,color=model,linetype=model))+
+		Figs_SSB[['ALL']]<-ggplot(summ2[model%in%unique(summ2$model)[1:10]],aes(x=Yr,y=SSB,linewidth=model,color=model,linetype=model))+
 		geom_line()+theme_bw(base_size=16)+lims(y=c(0,max(summ2$UCI)),x=c(CYR-1,EYR))+
 		scale_linetype_manual(values=c(rep(1,3),2:8),name="Scenarios")+
         scale_color_manual(values=c("dark green","orange","red",2:6,8,9),name="Scenarios")+
-        scale_size_manual(values=c(rep(1.5,3),rep(1,7)),name="Scenarios")+labs(y="Spawning biomass (t)",x="Year",title="Projections")
+        scale_linewidth_manual(values=c(rep(1.5,3),rep(1,7)),name="Scenarios")+labs(y="Spawning biomass (t)",x="Year",title="Projections")
 	
 
 # Iterate over each individual scenario and create the plot
@@ -345,11 +345,11 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESS
 # Create a list to store the plots
 		Figs_Catch <- list()
 
-		Figs_Catch[['ALL']]<-ggplot(Pcatch2[model%in%unique(Pcatch2$model)[1:9]],aes(x=Yr,y=Catch,size=model,color=model,linetype=model))+
+		Figs_Catch[['ALL']]<-ggplot(Pcatch2[model%in%unique(Pcatch2$model)[1:9]],aes(x=Yr,y=Catch,linewidth=model,color=model,linetype=model))+
 		geom_line()+theme_bw(base_size=16)+lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR+1,EYR))+
 		scale_linetype_manual(values=c(rep(1,2),2:8),name="Scenarios")+
         scale_color_manual(values=c("dark green","orange",2:6,8,9),name="Scenarios")+
-        scale_size_manual(values=c(rep(1.5,2),rep(1,7)),name="Scenarios")+labs(y="Catch (t)",x="Year",title="Projections")
+        scale_linewidth_manual(values=c(rep(1.5,2),rep(1,7)),name="Scenarios")+labs(y="Catch (t)",x="Year",title="Projections")
 
 
 
