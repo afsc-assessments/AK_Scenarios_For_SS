@@ -31,6 +31,22 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESS
     	stop("Error: The specified directory does not exist.")
   	}
 
+# Get the operating system information
+	# Get the operating system information
+	os_info <- Sys.info()
+
+# Check the operating system
+	supported_os <- c("Windows", "Darwin")
+	if (os_info["sysname"] %in% supported_os) {
+  # Code to execute if the operating system is supported
+  	print(paste(os_info["sysname"], "operating system detected and supported."))
+	} else {
+  # Code to execute if the operating system is unknown or unsupported
+  	print("Unknown or unsupported operating system.")
+  	stop()
+	}
+			
+
  ## Specify the libraries to load
 	libraries <- c("r4ss", "data.table", "ggplot2", "R.utils", "parallel", "doParallel", "foreach")
 
@@ -128,8 +144,30 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESS
   # Set the working directory to the scenario directory
   		setwd(dir_name)
     # Run the scenario
-  		r4ss::run(exe = "ss", skipfinished = FALSE, verbose = FALSE)
-	}
+	os_info <- Sys.info()
+
+	executables <- list(
+  		"Windows" = c("ss.exe", "ss3.exe"),
+  		"Darwin" = c("ss_osx")
+	)
+
+# Check the operating system
+		if (os_info["sysname"] %in% names(executables)) {
+  # Get the list of executables for the detected operating system
+  			os_executables <- executables[[os_info["sysname"]]]
+  
+  # Check if any of the executables exist
+  			existing_executables <- os_executables[file.exists(os_executables)]
+  
+  			if (length(existing_executables) > 0) {
+    # Run the first existing executable
+    			r4ss::run(exe = existing_executables[1], skipfinished = FALSE, verbose = FALSE)
+  			} else {
+    			print("No executable found for the operating system.")
+  			}
+		} 	
+	} 
+
 
 # Run scenarios in parallel
 	foreach(scenario = scenarios, .export = '.DIR') %dopar% {
@@ -379,3 +417,5 @@ for (i in 1:length(scenarios_P)){
 
 
 ## EXAMPLE:  profiles_M23.1.0.d<-Do_AK_TIER_3_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
+
+profiles_M23.1.0.d<-Do_AK_TIER_3_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
