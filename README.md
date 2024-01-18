@@ -1,6 +1,8 @@
  
 <B> ALASKA PROJECTION SCENARIOS FOR STOCK SYNTHESIS 3 FOR TIER 3 MODELS WITH PARALLEL COMPUTING </B>
+
  Version JAN 11, 2024
+
  Created by Steve Barbeaux E-mail: steve.barbeaux@noaa.gov  Phone: (206) 729-0871 
  
 
