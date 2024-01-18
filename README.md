@@ -20,3 +20,7 @@ You will also need to make a seperate folder named PROJ and copy your final mode
 <b>Scenario2</b> indicates whether you wish to have a different catch for scenario 2 (1= FmaxABC,2= F as <b>S2_F</b>, 3 = specified catch from a formatted csv saved in the root directory named 'Scenario2_catch.csv', must have an entry for each year, season, and fleet for the years that differ from Fmaxabc with columns "Year,Seas,Fleet,Catch_or_F" <br>
 <b>s4_F</b> is the F for scenario 4, defaults to 0.75, should be 0.65 for some species check your requirments <br>
 <b>do_fig</b> whether to plot figures
+
+
+<b>EXAMPLE:</b>  profiles_M23.1.0.d<-Do_AK_TIER_3_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ", CYR=2023, SYR=1977, SEXES=1, FLEETS=c(1), Scenario2=1, S2_F=0.4, do_fig=TRUE)
+
