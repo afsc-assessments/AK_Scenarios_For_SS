@@ -348,13 +348,16 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESS
         SSB_reference <- summ2[!model%like%'scenario_']
 # Create a list to store the plots
 		Figs_SSB <- list()
-
-		Figs_SSB[['ALL']]<-ggplot(summ2[model%in%unique(summ2$model)[1:10]],aes(x=Yr,y=SSB,linewidth=model,color=model,linetype=model))+
-		geom_line()+theme_bw(base_size=16)+lims(y=c(0,max(summ2$UCI)),x=c(CYR-1,EYR))+
-		scale_linetype_manual(values=c(rep(1,3),2:8),name="Scenarios")+
-        scale_color_manual(values=c("dark green","orange","red",2:6,8,9),name="Scenarios")+
-        scale_linewidth_manual(values=c(rep(1.5,3),rep(1,7)),name="Scenarios")+labs(y="Spawning biomass (t)",x="Year",title="Projections")
 	
+	Figs_SSB[['ALL']] <- ggplot(summ2[model%in%unique(summ2$model)[1:10]], aes(x = Yr, y = SSB, color = model, linetype = model)) +
+  		geom_line(size = 1.2)+lims(y=c(0,max(summ2$UCI)),x=c(CYR-1,EYR))+
+  		theme_bw(base_size = 12) +
+  		labs(x = "Year", y = "Spawning biomass (t)", title = "Projections") +
+  		scale_color_manual(values=c("dark green","orange","red",2:6,8,9),name="Scenarios")+
+  		scale_linetype_manual(values=c(rep(1,3),2:8),name="Scenarios")+
+  		theme(legend.position = "bottom", legend.title = element_text(face = "bold"), 
+        	legend.text = element_text(size = 10), plot.title = element_text(face = "bold", size = 14),
+        	axis.title = element_text(face = "bold", size = 12), axis.text = element_text(size = 10))
 
 # Iterate over each individual scenario and create the plot
  		scenarios_P<-unique(summ$model)
@@ -366,13 +369,19 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESS
 			scenarios_P3<-c(scenarios_P2,scenarios_P[i])
   			plot_data <- summ2[model %in% scenarios_P3]
 			
-		plot<-ggplot(plot_data,aes(x=Yr,y=SSB,linewidth=model,fill=model,color=model,linetype=model))+
-			geom_line()+theme_bw(base_size=16)+lims(y=c(0,max(summ2$UCI)),x=c(CYR-1,EYR))+
-			geom_ribbon(aes(ymin=LCI, ymax=UCI), alpha=0.2,color=NA)+
-			scale_linetype_manual(values=c(rep(1,3),(i+1)),name="Scenarios")+
-        	scale_color_manual(values=c(pcol[1:3],pcol[i+3]),name="Scenarios")+
-			scale_fill_manual(values=c(pcol[1:3],pcol[i+3]),name="Scenarios")+
-        	scale_linewidth_manual(values=c(rep(1.5,3),1),name="Scenarios")+labs(y="Spawning biomass (t)",x="Year",title="Projections")
+			plot <- ggplot(plot_data, aes(x = Yr, y = SSB, linewidth = model, fill = model, color = model, linetype = model)) +
+  				geom_line() +lims(y=c(0,max(summ2$UCI)),x=c(CYR-1,EYR))+
+  				geom_ribbon(aes(ymin = LCI, ymax = UCI), alpha = 0.2, color = NA) +
+  				theme_bw(base_size = 12) +
+  				labs(x = "Year", y = "Spawning biomass (t)", title = "Projections") +
+  				scale_linetype_manual(values=c(rep(1,3),(i+1)),name="Scenarios")+
+        		scale_color_manual(values=c(pcol[1:3],pcol[i+3]),name="Scenarios")+
+				scale_fill_manual(values=c(pcol[1:3],pcol[i+3]),name="Scenarios") +
+  				scale_linewidth_manual(values = c(rep(1.5, 3), 1.2), name = "Scenarios") +
+  				theme(legend.position = "bottom", legend.title = element_text(face = "bold"), 
+        			legend.text = element_text(size = 10), plot.title = element_text(face = "bold", size = 14),
+        			axis.title = element_text(face = "bold", size = 12), axis.text = element_text(size = 10))
+
 	
     			Figs_SSB[[scenarios_P[i]]] <- plot
 		}
@@ -383,12 +392,16 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESS
 # Create a list to store the plots
 		Figs_Catch <- list()
 
-		Figs_Catch[['ALL']]<-ggplot(Pcatch2[model%in%unique(Pcatch2$model)[1:9]],aes(x=Yr,y=Catch,linewidth=model,color=model,linetype=model))+
-		geom_line()+theme_bw(base_size=16)+lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR+1,EYR))+
-		scale_linetype_manual(values=c(rep(1,2),2:8),name="Scenarios")+
-        scale_color_manual(values=c("dark green","orange",2:6,8,9),name="Scenarios")+
-        scale_linewidth_manual(values=c(rep(1.5,2),rep(1,7)),name="Scenarios")+labs(y="Catch (t)",x="Year",title="Projections")
-
+		Figs_Catch[['ALL']]<- ggplot(Pcatch2[model %in% unique(Pcatch2$model)[1:9]], aes(x = Yr, y = Catch, linewidth = model, color = model, linetype = model)) +
+  			geom_line() + lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR+1,EYR))+
+  			theme_bw(base_size = 12) +
+  			labs(x = "Year", y = "Catch (t)", title = "Projections") +
+  			scale_linetype_manual(values=c(rep(1,2),2:8),name="Scenarios")+
+    		scale_color_manual(values=c("dark green","orange",2:6,8,9),name="Scenarios")+
+    		scale_linewidth_manual(values=c(rep(1.5,2),rep(1,7)),name="Scenarios")+
+  			theme(legend.position = "bottom", legend.title = element_text(face = "bold"), 
+        		legend.text = element_text(size = 10), plot.title = element_text(face = "bold", size = 14),
+        		axis.title = element_text(face = "bold", size = 12), axis.text = element_text(size = 10))
 
 
 # Create the remaining plots
@@ -398,13 +411,20 @@ for (i in 1:length(scenarios_P)){
 			scenarios_P3<-c(scenarios_P2,scenarios_P[i])
   			plot_data <- Pcatch2[model %in% scenarios_P3]
 			
-		plot<-ggplot(plot_data,aes(x=Yr,y=Catch,linewidth=model,fill=model,color=model,linetype=model))+
-			geom_line()+theme_bw(base_size=16)+lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR-1,EYR))+
+		plot <- ggplot(plot_data, aes(x = Yr, y = Catch, linewidth = model, fill = model, color = model, linetype = model)) +
+  			geom_line() + lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR-1,EYR))+
 			geom_ribbon(aes(ymin=LCI, ymax=UCI), alpha=0.2,color=NA)+
-			scale_linetype_manual(values=c(rep(1,2),(i+1)),name="Scenarios")+
+  			theme_bw(base_size = 12) +
+  			labs(x = "Year", y = "Catch (t)", title = "Projections") +
+  			scale_linetype_manual(values=c(rep(1,2),(i+1)),name="Scenarios")+
         	scale_color_manual(values=c(pcol[1:2],pcol[i+3]),name="Scenarios")+
 			scale_fill_manual(values=c(pcol[1:2],pcol[i+3]),name="Scenarios")+
-			scale_linewidth_manual(values=c(rep(1.5,2),1),name="Scenarios")+labs(y="Catch (t)",x="Year",title="Projections")
+			scale_linewidth_manual(values=c(rep(1.5,2),1),name="Scenarios")+
+  			labs(y = "Catch (t)", x = "Year", title = "Projections") +
+  			theme(legend.position = "bottom", legend.title = element_text(face = "bold"), 
+        		legend.text = element_text(size = 10), plot.title = element_text(face = "bold", size = 14),
+        		axis.title = element_text(face = "bold", size = 12), axis.text = element_text(size = 10))
+
 	
     			Figs_Catch[[scenarios_P[i]]] <- plot
 		}
@@ -418,4 +438,4 @@ for (i in 1:length(scenarios_P)){
 
 ## EXAMPLE:  profiles_M23.1.0.d<-Do_AK_TIER_3_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
 
-profiles_M23.1.0.d<-Do_AK_TIER_3_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
+##  profiles_M23.1.0.d<-Do_AK_TIER_3_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
