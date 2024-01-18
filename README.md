@@ -1,6 +1,6 @@
  # Alaska Projection Scenarios for Stock Synthesis
 
-Version: January 18,2024
+Version: January 18, 2024
 
 Created by Steve Barbeaux  
 E-mail: steve.barbeaux@noaa.gov  
