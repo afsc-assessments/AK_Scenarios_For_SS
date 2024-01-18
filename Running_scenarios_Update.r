@@ -393,7 +393,7 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESS
 		Figs_Catch <- list()
 
 		Figs_Catch[['ALL']]<- ggplot(Pcatch2[model %in% unique(Pcatch2$model)[1:9]], aes(x = Yr, y = Catch, linewidth = model, color = model, linetype = model)) +
-  			geom_line() + lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR+1,EYR))+
+  			geom_line() + lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR,EYR))+
   			theme_bw(base_size = 12) +
   			labs(x = "Year", y = "Catch (t)", title = "Projections") +
   			scale_linetype_manual(values=c(rep(1,2),2:8),name="Scenarios")+
@@ -412,7 +412,7 @@ for (i in 1:length(scenarios_P)){
   			plot_data <- Pcatch2[model %in% scenarios_P3]
 			
 		plot <- ggplot(plot_data, aes(x = Yr, y = Catch, linewidth = model, fill = model, color = model, linetype = model)) +
-  			geom_line() + lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR-1,EYR))+
+  			geom_line() + lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR,EYR))+
 			geom_ribbon(aes(ymin=LCI, ymax=UCI), alpha=0.2,color=NA)+
   			theme_bw(base_size = 12) +
   			labs(x = "Year", y = "Catch (t)", title = "Projections") +
