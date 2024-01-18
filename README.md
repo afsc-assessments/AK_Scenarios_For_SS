@@ -16,7 +16,7 @@ You will also need to make a seperate folder named PROJ and copy your final mode
 <b>CYR</b> is the model current year, <br>
 <b>SYR</b> is the start year for the model, <br>
 <b>SEXES</b> is the number of sexes in model,<br> 
-<b>fleets<b/>= the fleet number in SS for your fisheries, <br>
+<b>fleets</b>= the fleet number in SS for your fisheries, <br>
 <b>Scenario2</b> indicates whether you wish to have a different catch for scenario 2 (1= FmaxABC,2= F as <b>S2_F</b>, 3 = specified catch from a formatted csv saved in the root directory named 'Scenario2_catch.csv', must have an entry for each year, season, and fleet for the years that differ from Fmaxabc with columns "Year,Seas,Fleet,Catch_or_F" <br>
 <b>s4_F</b> is the F for scenario 4, defaults to 0.75, should be 0.65 for some species check your requirments <br>
 <b>do_fig</b> whether to plot figures
