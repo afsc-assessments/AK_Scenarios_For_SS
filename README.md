@@ -12,8 +12,8 @@
 Assumes you already have the forecast parameters already specified appropriately in the forecast.ss for scenario 1, <br>
 Make sure there is no catch or F already specified in the forecast file.<br>
 You will also need to make a seperate folder named PROJ and copy your final model run into the folder, this folder will be the folder you point to using DIR <br>
-DIR is the model directory (see above)<br>
-CYR is the model current year, SYR is the start year for the model, SEXES is the number of sexes in model, fleets= the fleet number in SS for your fisheries, <br>
-Scenario2 indicates whether you wish to have a different catch for scenario 2 (1= FmaxABC,2= F as S2_F, 3 = specified catch from a formatted csv saved in the root directory named 'Scenario2_catch.csv', must have an entry for each year, season, and fleet for the years that differ from Fmaxabc with columns "Year,Seas,Fleet,Catch_or_F" <br>
-s4_F is the F for scenario 4, defaults to 0.75, should be 0.65 for some species check your requirments <br>
-do_fig whether to plot figures
+<b>DIR</b> is the model directory (see above)<br>
+<b>CYR</b> is the model current year, SYR is the start year for the model, SEXES is the number of sexes in model, fleets= the fleet number in SS for your fisheries, <br>
+<b>Scenario2</b> indicates whether you wish to have a different catch for scenario 2 (1= FmaxABC,2= F as S2_F, 3 = specified catch from a formatted csv saved in the root directory named 'Scenario2_catch.csv', must have an entry for each year, season, and fleet for the years that differ from Fmaxabc with columns "Year,Seas,Fleet,Catch_or_F" <br>
+<b>s4_F</b> is the F for scenario 4, defaults to 0.75, should be 0.65 for some species check your requirments <br>
+<b>do_fig</b> whether to plot figures
