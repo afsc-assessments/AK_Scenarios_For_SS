@@ -12,19 +12,27 @@
 ## You will also need to make a seperate folder named PROJ and copy your final model run into the folder, 
 ## this folder will be the folder you point to using DIR
 ##
-## DIR is the model directory (see above)
-## CYR is the model current year, SYR is the start year for the model, SEXES is the number of sexes in model, fleets= the fleet number in SS for your fisheries,
-## Scenario2 indicates whether you wish to have a different catch for scenario 2 (1= FmaxABC,2= F as S2_F, 3 = specified catch from a 
-## formatted csv saved in the root directory named 'Scenario2_catch.csv', must have an entry for each year, season, and fleet for the years 
-## that differ from Fmaxabc
-## with columns "Year,Seas,Fleet,Catch_or_F"
-## s4_F is the F for scenario 4, defaults to 0.75, should be 0.65 for some species check your requirments
-## do_fig whether to plot figures
-##
+#' @DIR is the model directory (see above)
+#' @CYR is the model current year, 
+#' @SYR is the start year for the model, 
+#' @SEXES is the number of sexes in model, 
+#' @fleets= the fleet number in SS for your fisheries,
+#' @Scenario2 indicates whether you wish to have a different catch for scenario 2 (1= FmaxABC,2= F as S2_F, 3 = specified catch from a 
+##            formatted csv saved in the root directory named 'Scenario2_catch.csv', must have an entry for each year, season, and fleet for the years 
+##            that differ from Fmaxabc with columns "Year,Seas,Fleet,Catch_or_F"
+#' @s4_F is the F for scenario 4, defaults to 0.75, should be 0.65 for some species check your requirments
+#' @do_fig whether to plot figures
+#' @do_mark  whether to make markdown tables
+#' @URL is the url address of the previous stock assessment document
+#' @pdf_tab is the table number in the pdf to collect executive summary table data
+#' @init_dir is the director of the AK_SCENARIOS_FOR_SS files.
 ##
 
 
-Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12A/PROJ", CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, S2_F = 0.4, s4_F = 0.75, do_fig = TRUE) {
+Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12A/PROJ", 
+	                                 CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, S2_F = 0.4, s4_F = 0.75, do_fig = TRUE, 
+	                                 do_mark=TRUE,URL="https://apps-afsc.fisheries.noaa.gov/Plan_Team/2022/EBSpcod.pdf", pdf_tab=1, 
+	                                 init_dir=" C:/Users/steve.barbeaux/Work/GitHub/AK_Scenarios_For_SS") {
 
 # Check if the specified directory exists
   	if (!dir.exists(DIR)) {
@@ -432,6 +440,23 @@ for (i in 1:length(scenarios_P)){
 	output$FIGS <- list(Figs_SSB, Figs_Catch)
     }
  
+## create markdown tables for assessment
+if(do_mark){
+## if we create a library, this would need to change. For now need to make sure these function files are in the root directory.
+
+source(paste0(init_dir,"/main_table.r"))
+source(paste0(init_dir,"/exe_table.r"))
+source(paste0(init_dir,"/get_pdf_tables.r"))
+source(paste0(init_dir,"/proj_tables.r"))
+
+pdf_table<-get_pdf_tables(url=URL, page=1:10)
+
+output$ex_tab<-EXE_TABLE(prof=output, table=pdf_table[[pdf_tab]])
+output$summary_tabs<-proj_tables(prof=output)
+
+}
+
+
 	return(output)
 }
 
