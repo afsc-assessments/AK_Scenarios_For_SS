@@ -56,4 +56,7 @@ e.g.
 
 Example usage:
 ```R
-Do_AK_Scenarios(DIR = "C:/WORKING_FOLDER/2021 Stock Assessments/2021 Pacific cod/Models/Model19.1", CYR = 2021, SYR = 1977, FCASTY = 15, SEXES = 1, FLEETS = c(1:3), Scenario2 = 1, S2_F = 0.4, do_fig = TRUE)
+Do_AK_TIER_3_Scenarios <- function(DIR = "C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2024_ASSESSMENT/SEPTEMBER_MODELS/GROWTH_MODELS_1990/Model_23.2f", 
+	                                 CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, S2_F = 0.4, s4_F = 0.75, do_fig = TRUE, 
+	                                 do_mark=TRUE,URL="https://apps-afsc.fisheries.noaa.gov/Plan_Team/2022/EBSpcod.pdf", pdf_tab=1, 
+	                                 init_dir=" C:/Users/steve.barbeaux/Work/GitHub/AK_Scenarios_For_SS"
