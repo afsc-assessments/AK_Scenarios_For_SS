@@ -441,25 +441,16 @@ for (i in 1:length(scenarios_P)){
  
 ## create markdown tables for assessment
 if(do_mark){
-## if we create a library, this would need to change. For now need to make sure these function files are in the root directory.
-
-source(paste0(init_dir,"/main_table.r"))
-source(paste0(init_dir,"/exe_table.r"))
-source(paste0(init_dir,"/get_pdf_tables.r"))
-source(paste0(init_dir,"/proj_tables.r"))
-
-pdf_table<-get_pdf_tables(url=URL, page=1:10)
-
-output$ex_tab<-EXE_TABLE(prof=output, table=pdf_table[[pdf_tab]])
-output$summary_tabs<-proj_tables(prof=output)
-
-}
-
+	## if we create a library, this would need to change. For now need to make sure these function files are in the root directory.
+	source(paste0(init_dir,"/main_table.r"))
+	source(paste0(init_dir,"/exe_table.r"))
+	source(paste0(init_dir,"/get_pdf_tables.r"))
+	source(paste0(init_dir,"/proj_tables.r"))
+	
+	pdf_table<-get_pdf_tables(url=URL, page=1:10)
+	output$EXE_TAB<-EXE_TABLE(prof=output, table=pdf_table[[pdf_tab]])
+	output$SUMMARY_TABS<-proj_tables(prof=output)
+	}
 
 	return(output)
 }
-
-
-## EXAMPLE:  profiles_M23.1.0.d<-Do_AK_TIER_3_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
-
- ##  profiles_M23.1.0.d<-Do_AK_TIER_3_Scenarios(DIR="C:/Users/steve.barbeaux/Work/WORKING_FOLDER/EBS_PCOD_work_folder/2023_ASSESSMENT/NOVEMBER_MODELS/2023_MODELS/Model_23.1.0.d2/PROJ",CYR=2023,SYR=1977,SEXES=1,FLEETS=c(1),Scenario2=1,S2_F=0.4,do_fig=TRUE)
