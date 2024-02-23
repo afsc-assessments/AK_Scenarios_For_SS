@@ -31,7 +31,7 @@
 
 Do_AK_TIER_3_Scenarios <- function(DIR = "Model23.1.0.d/PROJ", CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, 
 				   S2_F = 0.4, s4_F = 0.75, do_fig = TRUE, do_mark=TRUE,URL="https://apps-afsc.fisheries.noaa.gov/Plan_Team/2022/EBSpcod.pdf", 
-				   pdf_tab=1, init_dir=" C:/Users/steve.barbeaux/Work/GitHub/AK_Scenarios_For_SS") {
+				   pdf_tab=1, init_dir="C:/Users/steve.barbeaux/Work/GitHub/AK_Scenarios_For_SS") {
 
 # Check if the specified directory exists
   	if (!dir.exists(DIR)) {
@@ -55,7 +55,7 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model23.1.0.d/PROJ", CYR = 2023, SYR =
 			
 
  ## Specify the libraries to load
-	libraries <- c("r4ss", "data.table", "ggplot2", "R.utils", "parallel", "doParallel", "foreach")
+	libraries <- c("r4ss", "data.table","dplyr","flextable", "ggplot2", "R.utils", "parallel", "doParallel", "foreach")
 
 # Loop through the libraries and load them if they don't exist
 	for (lib in libraries) {
@@ -66,7 +66,7 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model23.1.0.d/PROJ", CYR = 2023, SYR =
 	}
 
 	.DIR <- DIR
-    setwd(DIR) ## folder with converged model
+    setwd(DIR) ## folder with converged modelinit
    scenario_1 <- SS_readforecast(file = "forecast.ss")
 #   # Define the list of scenarios
 
@@ -442,9 +442,10 @@ for (i in 1:length(scenarios_P)){
 ## create markdown tables for assessment
 if(do_mark){
 	## if we create a library, this would need to change. For now need to make sure these function files are in the root directory.
+	
 	source(paste0(init_dir,"/main_table.r"))
 	source(paste0(init_dir,"/exe_table.r"))
-	source(paste0(init_dir,"/get_pdf_tables.r"))
+	source(paste0(init_dir,"/get_pdf_table.r"))
 	source(paste0(init_dir,"/proj_tables.r"))
 	
 	pdf_table<-get_pdf_tables(url=URL, page=1:10)
