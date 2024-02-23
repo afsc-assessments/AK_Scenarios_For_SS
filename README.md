@@ -33,28 +33,28 @@ Parameters:
 
 ## Output
 
-$SSB 
+<B>SSB</B> 
 This provides all output from the model start year to the final projection year as specified in the forecast file for each scenario. Table with columns Yr, TOT, SUMM, SSB, std, F, Catch, SSB_unfished, and model. Yr = year, TOT = total biomass, SUMM= Summary biomass as specified in the starter file, SSB is the female spawning biomass, std = standard deviation of the female spawning biomass, F = sum apical F, Catch = total catch, SSB_unfished =  unfished female spawning biomass, and model = Scenario.    
 
-CATCH
+<B>CATCH</B>
 This provides projected catch estimates for each scenario. Table with columns Yr, Catch, Catch_std, and model, Yr = year, Catch = total catch, Catch_std = standard deviation of the catch, and model = scenario. 
 
-Two_year
+<B>Two_year</B>
 Table with projections out two years. Table with columns Yr, SSB, SSB_PER, SB100, SB40, SB35, F40, F35, C_ABC, C_OFL. 
 
-Tables
+<B>Tables</B>
 List with two three tables including Catch, F, and SSB corresponsing to the standard projection tables included in the stock assessment 
 
-FIGS:
+<B>FIGS:</B>
 List with two sets of figures including standard projection figures showing spawning biomass and catch projections. 
 
 e.g. 
-SSB:
+<B>SSB:</B>
 ![image](https://github.com/afsc-assessments/AK_Scenarios_For_SS/assets/5395237/379a0331-8757-486f-81c0-5f38228a0bfc)
 
 ![image](https://github.com/afsc-assessments/AK_Scenarios_For_SS/assets/5395237/baf2959e-9d0a-4e7b-87f0-d79ae783152f)
 
-Catch:
+<B>Catch:</B>
 ![image](https://github.com/afsc-assessments/AK_Scenarios_For_SS/assets/5395237/e1130b51-b94b-416e-b383-69741d71b030)
 ![image](https://github.com/afsc-assessments/AK_Scenarios_For_SS/assets/5395237/bb202bdc-b566-4ffb-9401-02b46eec726a)
 
