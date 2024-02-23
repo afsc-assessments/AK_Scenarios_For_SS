@@ -25,7 +25,7 @@ Parameters:
 - `fleets`: The fleet number/s in SS for your fisheries
 - `Scenario2`: Indicates whether you wish to have a different catch for scenario 2 (1 = FmaxABC, 2 = F as S2_F, 3 = specified catch from a formatted CSV saved in the root directory named 'Scenario2_catch.csv', must have an entry for each year, season, and fleet for the years that differ from Fmaxabc with columns "Year, Seas, Fleet, Catch_or_F")
 - `s4_F` is the F for scenario 4, defaults to 0.75, should be 0.65 for some species check your requirments
-- - `do_fig`: Whether to plot figures
+- `do_fig`: Whether to plot figures
 - `do_mark`  whether to make markdown tables
 - `URL` is the url address of the previous stock assessment document
 - `pdf_tab` is the table number in the pdf to collect executive summary table data
