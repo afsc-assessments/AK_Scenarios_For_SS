@@ -29,10 +29,9 @@
 ##
 
 
-Do_AK_TIER_3_Scenarios <- function(DIR = "C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12A/PROJ", 
-	                                 CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, S2_F = 0.4, s4_F = 0.75, do_fig = TRUE, 
-	                                 do_mark=TRUE,URL="https://apps-afsc.fisheries.noaa.gov/Plan_Team/2022/EBSpcod.pdf", pdf_tab=1, 
-	                                 init_dir=" C:/Users/steve.barbeaux/Work/GitHub/AK_Scenarios_For_SS") {
+Do_AK_TIER_3_Scenarios <- function(DIR = "Model23.1.0.d/PROJ", CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, 
+				   S2_F = 0.4, s4_F = 0.75, do_fig = TRUE, do_mark=TRUE,URL="https://apps-afsc.fisheries.noaa.gov/Plan_Team/2022/EBSpcod.pdf", 
+				   pdf_tab=1, init_dir=" C:/Users/steve.barbeaux/Work/GitHub/AK_Scenarios_For_SS") {
 
 # Check if the specified directory exists
   	if (!dir.exists(DIR)) {
