@@ -6,7 +6,7 @@ Created by Steve Barbeaux
 E-mail: steve.barbeaux@noaa.gov  
 Phone: ‪(206) 526-4211‬
 
-This function performs the 7 Alaska projection scenarios for Stock Synthesis 3 models. It runs the scenarios, saves them to the working directory, and produces stock figures for the projections. However, please note that this function could use some work on generalization and making the figures more suitable for assessment purposes.
+This function performs the 7 Alaska projection scenarios for Stock Synthesis 3 for tier 3 models. It runs the scenarios, saves them to the working directory, and produces stock figures for the projections. However, please note that this function could use some work on generalization and making the figures more suitable for assessment purposes.
 
 ## Usage
 
@@ -24,7 +24,15 @@ Parameters:
 - `SEXES`: Number of sexes in the model
 - `fleets`: The fleet number/s in SS for your fisheries
 - `Scenario2`: Indicates whether you wish to have a different catch for scenario 2 (1 = FmaxABC, 2 = F as S2_F, 3 = specified catch from a formatted CSV saved in the root directory named 'Scenario2_catch.csv', must have an entry for each year, season, and fleet for the years that differ from Fmaxabc with columns "Year, Seas, Fleet, Catch_or_F")
-- `do_fig`: Whether to plot figures
+- `s4_F` is the F for scenario 4, defaults to 0.75, should be 0.65 for some species check your requirments
+- - `do_fig`: Whether to plot figures
+- `do_mark`  whether to make markdown tables
+- `URL` is the url address of the previous stock assessment document
+- `pdf_tab` is the table number in the pdf to collect executive summary table data
+- `init_dir` is the director of the AK_SCENARIOS_FOR_SS files.
+
+## Output
+
 
 Example usage:
 ```R
