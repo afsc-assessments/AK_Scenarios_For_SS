@@ -45,10 +45,10 @@ Table with projections out two years. Table with columns Yr, SSB, SSB_PER, SB100
 <B>Tables</B><br>
 List with two three tables including Catch, F, and SSB corresponsing to the standard projection tables included in the stock assessment 
 
-<B>FIGS:</B><br>
+<B>FIGS</B><br>
 List with two sets of figures including standard projection figures showing spawning biomass and catch projections. 
 
-e.g. 
+Example figures: 
 <B><I>SSB</I></B><br>
 ![image](https://github.com/afsc-assessments/AK_Scenarios_For_SS/assets/5395237/379a0331-8757-486f-81c0-5f38228a0bfc)
 
