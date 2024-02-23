@@ -49,10 +49,14 @@ FIGS:
 List with two sets of figures including standard projection figures showing spawning biomass and catch projections. 
 
 e.g. 
+SSB:
 ![image](https://github.com/afsc-assessments/AK_Scenarios_For_SS/assets/5395237/379a0331-8757-486f-81c0-5f38228a0bfc)
 
 ![image](https://github.com/afsc-assessments/AK_Scenarios_For_SS/assets/5395237/baf2959e-9d0a-4e7b-87f0-d79ae783152f)
 
+Catch:
+![image](https://github.com/afsc-assessments/AK_Scenarios_For_SS/assets/5395237/e1130b51-b94b-416e-b383-69741d71b030)
+![image](https://github.com/afsc-assessments/AK_Scenarios_For_SS/assets/5395237/bb202bdc-b566-4ffb-9401-02b46eec726a)
 
 Example usage:
 ```R
