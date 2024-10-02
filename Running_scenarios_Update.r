@@ -31,7 +31,7 @@
 #DIR = "Model_23.1.0.d_e_5cm/PROJ"; CYR = 2023; SYR = 1977;  SEXES = 1; FLEETS = 1; Scenario2 = 1; S2_F = 0.4; s4_F = 0.75; do_fig = TRUE; do_mark=TRUE;URL="https://apps-afsc.fisheries.noaa.gov/Plan_Team/2022/EBSpcod.pdf";pdf_tab=1; init_dir="C:/Users/steve.barbeaux/Work/GitHub/AK_Scenarios_For_SS"
 
 
-Do_AK_TIER_3_Scenarios <- function(DIR = "Model23.1.0.d_e_5cm/PROJ", CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, 
+Do_AK_TIER_3_Scenarios <- function(DIR = "Model_23.1.0.d_e_5cm/PROJ", CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, 
 				   S2_F = 0.4, s4_F = 0.75, do_fig = TRUE, do_mark=TRUE,URL="https://apps-afsc.fisheries.noaa.gov/Plan_Team/2022/EBSpcod.pdf", 
 				   pdf_tab=1, init_dir="C:/Users/steve.barbeaux/Work/GitHub/AK_Scenarios_For_SS") {
 
@@ -72,6 +72,8 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model23.1.0.d_e_5cm/PROJ", CYR = 2023,
 	.DIR <- DIR
     #setwd(DIR) ## folder with converged modelinit
    scenario_1 <- SS_readforecast(file = file.path(DIR,"forecast.ss"))
+   
+   rep1<-SS_output(dir=DIR)
 #   # Define the list of scenarios
 
  	copyDirectory(DIR,file.path(DIR,"scenario_1"),recursive=FALSE)
@@ -120,17 +122,35 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model23.1.0.d_e_5cm/PROJ", CYR = 2023,
   		if (scenario == 'scenario_2') {
 	
     		if(Scenario2==2){
-    			scenario_C$SPRtarget <- S2_F
+
+    			   Fyear<-paste0("F_",CYR+1)
+    			   years<-seq(CYR+1,CYR+15,1)
+
+
+    			   f2<-S2_F*data.table::data.table(rep1$derived_quants)[Label==Fyear]$Value
+    			   newF<-data.table::data.table(Year=years,Seas=1,Fleet=1,F=f2)
+
+    				scenario_C$Forecast<-4
+    				scenario_C$BforconstantF<-0.001  ## cluge to get rid of control rule of ave. F
+    				scenario_C$BfornoF<-0.0001      ## cluge to get rid of control rule scaling of ave. F
+            
+            scenario_C$InputBasis<-99
+            scenario_C$ForeCatch<-newF
+
     		}
 			if(Scenario2==3){
 				scenario_C$ForeCatch <- read.csv("Scenario2_catch.csv",header=T)
     		}
   		} else if (scenario == 'scenario_3') {
     		scenario_C$Forecast<-4
+    		scenario_C$BforconstantF<-0.001  ## cluge to get rid of control rule of ave. F
+    		scenario_C$BfornoF<-0.0001      ## cluge to get rid of control rule scaling of ave. F
 			scenario_C$Fcast_years [c(3,4)]<-c(CYR-5, CYR-1)
   		} else if (scenario == 'scenario_4') {
-			scenario_C$Btarget <- s4_F
-			scenario_C$SPRtarget <- s4_F
+  			scenario_C$Forecast <- 5
+			scenario_C$F_scalar <- s4_F
+			#scenario_C$SPRtarget <- s4_F
+
   		} else if (scenario == 'scenario_5') {
 			catch <- expand.grid(Year=c((CYR+1):(CYR+FCASTY)),Seas=1,Fleet=FLEETS,Catch_or_F=0)
 			names(catch)<-names(scenario_C$ForeCatch)

@@ -21,7 +21,7 @@
 ##
 
 
-Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12A/PROJ",CYR=2022,SYR=1977,FCASTY=12,SEXES=1,FLEETS=1,Scenario2=1,S2_F=0.4,do_fig=TRUE){
+Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMBER_MODELS/GRANT_MODELS/Model19_12A/PROJ",CYR=2022,SYR=1977,FCASTY=12,SEXES=1,FLEETS=1,Scenario2=1,S2_F=0.4,S4_F=0.75,do_fig=TRUE){
 
 	require(r4ss)
 	require(data.table)
@@ -42,9 +42,23 @@ Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMB
 	scenario_2 <- scenario_1
 	copyDirectory(getwd(),paste0(getwd(),"/scenario_2"),recursive=FALSE)
 	
-    if(Scenario2==2){
-    	scenario_2$SPRtarget <- S2_F
-    }
+   if(Scenario2==2){
+
+    			   Fyear<-paste0("F_",CYR+1)
+    			   years<-seq(CYR+1,CYR+15,1)
+
+
+    			   f2<-S2_F*data.table::data.table(rep1$derived_quants)[Label==Fyear]$Value
+    			   newF<-data.table::data.table(Year=years,Seas=1,Fleet=1,F=f2)
+
+    				scenario_C$Forecast<-4
+    				scenario_C$BforconstantF<-0.001  ## cluge to get rid of control rule of ave. F
+    				scenario_C$BfornoF<-0.0001      ## cluge to get rid of control rule scaling of ave. F
+            
+            scenario_C$InputBasis<-99
+            scenario_C$ForeCatch<-newF
+
+    		}
 
 	if(Scenario2==3){
 		scenario_2$ForeCatch <- read.csv("Scenario2_catch.csv",header=T)
@@ -54,16 +68,18 @@ Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMB
 ## Average f for previous 5 years  cyear=year(Sys.Date()) 
 	scenario_3<-scenario_1
 	copyDirectory(getwd(),paste0(getwd(),"/scenario_3"),recursive=FALSE)
-	scenario_3$Forecast<-4
-	scenario_3$Fcast_years [c(3,4)]<-c(CYR-5, CYR-1)
+	        scenario_C$Forecast<-4
+    		scenario_C$BforconstantF<-0.001  ## cluge to get rid of control rule of ave. F
+    		scenario_C$BfornoF<-0.0001      ## cluge to get rid of control rule scaling of ave. F
+			scenario_C$Fcast_years [c(3,4)]<-c(CYR-5, CYR-1)
 
 	SS_writeforecast(scenario_3, dir = paste0(getwd(),"/scenario_3"), file = "forecast.ss", writeAll = TRUE, overwrite = TRUE)
 
 #F75%
 	scenario_4<-scenario_1
 	copyDirectory(getwd(),paste0(getwd(),"/scenario_4"),recursive=FALSE)
-	scenario_4$Btarget <- 0.75
-	scenario_4$SPRtarget <- 0.75
+	scenario_C$Forecast <- 5
+	scenario_C$F_scalar <- s4_F
 
 	SS_writeforecast(scenario_4, dir = paste0(getwd(),"/scenario_4"), file = "forecast.ss", writeAll = TRUE, overwrite = TRUE)
 
