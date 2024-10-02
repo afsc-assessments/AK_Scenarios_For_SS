@@ -28,8 +28,10 @@
 #' @init_dir is the director of the AK_SCENARIOS_FOR_SS files.
 ##
 
+#DIR = "Model_23.1.0.d_e_5cm/PROJ"; CYR = 2023; SYR = 1977;  SEXES = 1; FLEETS = 1; Scenario2 = 1; S2_F = 0.4; s4_F = 0.75; do_fig = TRUE; do_mark=TRUE;URL="https://apps-afsc.fisheries.noaa.gov/Plan_Team/2022/EBSpcod.pdf";pdf_tab=1; init_dir="C:/Users/steve.barbeaux/Work/GitHub/AK_Scenarios_For_SS"
 
-Do_AK_TIER_3_Scenarios <- function(DIR = "Model23.1.0.d/PROJ", CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, 
+
+Do_AK_TIER_3_Scenarios <- function(DIR = "Model23.1.0.d_e_5cm/PROJ", CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = 1, Scenario2 = 1, 
 				   S2_F = 0.4, s4_F = 0.75, do_fig = TRUE, do_mark=TRUE,URL="https://apps-afsc.fisheries.noaa.gov/Plan_Team/2022/EBSpcod.pdf", 
 				   pdf_tab=1, init_dir="C:/Users/steve.barbeaux/Work/GitHub/AK_Scenarios_For_SS") {
 
@@ -65,9 +67,11 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model23.1.0.d/PROJ", CYR = 2023, SYR =
   		}
 	}
 
+
+  parent_dir<-getwd()
 	.DIR <- DIR
-    setwd(DIR) ## folder with converged modelinit
-   scenario_1 <- SS_readforecast(file = "forecast.ss")
+    #setwd(DIR) ## folder with converged modelinit
+   scenario_1 <- SS_readforecast(file = file.path(DIR,"forecast.ss"))
 #   # Define the list of scenarios
 
  	copyDirectory(DIR,file.path(DIR,"scenario_1"),recursive=FALSE)
@@ -85,6 +89,9 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model23.1.0.d/PROJ", CYR = 2023, SYR =
 
 ## setting up parallel computing    
 	# Get the number of available cores
+	
+	setwd(parent_dir)
+
 	num_cores <- detectCores()
 	if(num_cores>8)num_cores=8
 	
@@ -400,7 +407,7 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model23.1.0.d/PROJ", CYR = 2023, SYR =
 		Figs_Catch <- list()
 
 		Figs_Catch[['ALL']]<- ggplot(Pcatch2[model %in% unique(Pcatch2$model)[1:9]], aes(x = Yr, y = Catch, linewidth = model, color = model, linetype = model)) +
-  			geom_line() + lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR,EYR))+
+  			geom_line() + lims(y=c(0,max(Pcatch2$UCI)),x=c((CYR+1),EYR))+
   			theme_bw(base_size = 12) +
   			labs(x = "Year", y = "Catch (t)", title = "Projections") +
   			scale_linetype_manual(values=c(rep(1,2),2:8),name="Scenarios")+
@@ -419,7 +426,7 @@ for (i in 1:length(scenarios_P)){
   			plot_data <- Pcatch2[model %in% scenarios_P3]
 			
 		plot <- ggplot(plot_data, aes(x = Yr, y = Catch, linewidth = model, fill = model, color = model, linetype = model)) +
-  			geom_line() + lims(y=c(0,max(Pcatch2$UCI)),x=c(CYR,EYR))+
+  			geom_line() + lims(y=c(0,max(Pcatch2$UCI)),x=c((CYR+1),EYR))+
 			geom_ribbon(aes(ymin=LCI, ymax=UCI), alpha=0.2,color=NA)+
   			theme_bw(base_size = 12) +
   			labs(x = "Year", y = "Catch (t)", title = "Projections") +
