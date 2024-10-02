@@ -147,8 +147,8 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model_23.1.0.d_e_5cm/PROJ", CYR = 2023
     		scenario_C$BfornoF<-0.0001      ## cluge to get rid of control rule scaling of ave. F
 			scenario_C$Fcast_years [c(3,4)]<-c(CYR-5, CYR-1)
   		} else if (scenario == 'scenario_4') {
-  			scenario_C$Forecast <- 5
-			scenario_C$F_scalar <- s4_F
+  		#scenario_C$Forecast <- 5
+			scenario_C$Flimitfraction <- s4_F
 			#scenario_C$SPRtarget <- s4_F
 
   		} else if (scenario == 'scenario_5') {

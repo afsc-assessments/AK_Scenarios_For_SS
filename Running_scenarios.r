@@ -78,8 +78,7 @@ Do_AK_Scenarios<-function(DIR="C:/WORKING_FOLDER/EBS_PCOD/2022_ASSESSMENT/NOVEMB
 #F75%
 	scenario_4<-scenario_1
 	copyDirectory(getwd(),paste0(getwd(),"/scenario_4"),recursive=FALSE)
-	scenario_C$Forecast <- 5
-	scenario_C$F_scalar <- s4_F
+	scenario_C$Flimitfraction <- s4_F
 
 	SS_writeforecast(scenario_4, dir = paste0(getwd(),"/scenario_4"), file = "forecast.ss", writeAll = TRUE, overwrite = TRUE)
 
