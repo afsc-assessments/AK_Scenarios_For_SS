@@ -219,11 +219,13 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model_23.1.0.d_e_5cm/PROJ", CYR = 2023
 	scenarios <- c("scenario_1", "scenario_2", "scenario_3", "scenario_4", "scenario_5", "scenario_6", "scenario_7", "scenario_8")
 	mods1<-SSgetoutput(dirvec=scenarios[1:8])
 
+	kluge1<-data.table(mods[[1]]$sprseries)$F_report[1]  ## kluge to deal with column name change between versions
+ 
+
 # Calculate the year index for the summary statistics
 	EYR<- CYR+FCASTY
 	yr1<- EYR-SYR+3
 
-  kluge1<-data.table(mod$sprseries)$F_report[1]  ## kluge to deal with column name change between versions
     
    # Calculate summary statistics for each scenario
 	summ <- lapply(seq_along(mods1), function(i) {
