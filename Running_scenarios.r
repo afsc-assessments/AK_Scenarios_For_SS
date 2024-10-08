@@ -152,15 +152,48 @@ if(SEXES==1) sex=2
 	Pcatch<-vector("list",length=7)
 	EYR<- CYR+FCASTY
 	yr1<- EYR-SYR+3
+
+	kluge1<-data.table(mods1[[1]]$sprseries)$F_report[1]  ## kluge to deal with column name change between versions
+
+    F1<-vector("list",length=8)
+    
+    for(i in 1:8){
+    	if(!is.null(kluge1)){ F1[[i]]=data.table(mods1[[i]]$sprseries)[Yr%in%c(SYR:EYR)]$F_report
+    		} else {
+    		F1[[i]]=data.table(mods1[[i]]$sprseries)[Yr%in%c(SYR:EYR)]$F_std}
+    } 
+
 	
 	for(i in 1:7){
-		summ[[i]]<-data.table(Yr=SYR:EYR,TOT=data.table(mods1[[i]]$timeseries)[Yr%in%c(SYR:EYR)]$Bio_all,SUMM=data.table(mods1[[i]]$timeseries)[Yr%in%c(SYR:EYR)]$Bio_smry,SSB=data.table(mods1[[i]]$timeseries)[Yr%in%c(SYR:EYR)]$SpawnBio/sex,std=data.table(mods1[[i]]$stdtable)[name%like%"SSB"][3:yr1,]$std/sex,F=data.table(mods1[[i]]$sprseries)[Yr%in%c(SYR:EYR)]$F_report,Catch=data.table(mods1[[i]]$sprseries)[Yr%in%c(SYR:EYR)]$Enc_Catch,SSB_unfished=data.table(mods1[[i]]$derived_quants)[Label=="SSB_unfished"]$Value/sex,model=scen[i])
-	    Pcatch[[i]]<-data.table(Yr=(CYR+1):EYR,Catch=data.table(mods1[[i]]$sprseries)[Yr%in%c((CYR+1):EYR)]$Enc_Catch,Catch_std=data.table(mods1[[i]]$stdtable)[name%like%"ForeCatch_"]$std[2:FCASTY+1], model=scen[i])
+		summ[[i]]<-data.table(Yr=SYR:EYR,
+			TOT=data.table(mods1[[i]]$timeseries)[Yr%in%c(SYR:EYR)]$Bio_all,
+			SUMM=data.table(mods1[[i]]$timeseries)[Yr%in%c(SYR:EYR)]$Bio_smry,
+			SSB=data.table(mods1[[i]]$timeseries)[Yr%in%c(SYR:EYR)]$SpawnBio/sex,
+			std=data.table(mods1[[i]]$stdtable)[name%like%"SSB"][3:yr1,]$std/sex,
+			F=F1[[i]],
+			Catch=data.table(mods1[[i]]$sprseries)[Yr%in%c(SYR:EYR)]$Enc_Catch,
+			SSB_unfished=data.table(mods1[[i]]$derived_quants)[Label=="SSB_unfished"]$Value/sex,
+			model=scen[i])
+	    Pcatch[[i]]<-data.table(Yr=(CYR+1):EYR,
+	    	Catch=data.table(mods1[[i]]$sprseries)[Yr%in%c((CYR+1):EYR)]$Enc_Catch,
+	    	Catch_std=data.table(mods1[[i]]$stdtable)[name%like%"ForeCatch_"]$std[2:FCASTY+1], 
+	    	model=scen[i])
 	
 	}
 
-    summ8<-data.table(Yr=SYR:EYR,TOT=data.table(mods1[[8]]$timeseries)[Yr%in%c(SYR:EYR)]$Bio_all,SUMM=data.table(mods1[[8]]$timeseries)[Yr%in%c(SYR:EYR)]$Bio_smry,SSB=data.table(mods1[[8]]$timeseries)[Yr%in%c(SYR:EYR)]$SpawnBio/sex,std=data.table(mods1[[8]]$stdtable)[name%like%"SSB"][3:yr1,]$std/sex,F=data.table(mods1[[8]]$sprseries)[Yr%in%c(SYR:EYR)]$F_report,Catch=data.table(mods1[[8]]$sprseries)[Yr%in%c(SYR:EYR)]$Enc_Catch,SSB_unfished=data.table(mods1[[8]]$derived_quants)[Label=="SSB_unfished"]$Value/sex,model=scen[8])
-	Pcatch8<-data.table(Yr=(CYR+1):EYR,Catch=data.table(mods1[[8]]$sprseries)[Yr%in%c((CYR+1):EYR)]$Enc_Catch,Catch_std=data.table(mods1[[8]]$stdtable)[name%like%"ForeCatch_"]$std[1:FCASTY], model=scen[8])
+    summ8<-data.table(Yr=SYR:EYR,
+    	TOT=data.table(mods1[[8]]$timeseries)[Yr%in%c(SYR:EYR)]$Bio_all,
+    	SUMM=data.table(mods1[[8]]$timeseries)[Yr%in%c(SYR:EYR)]$Bio_smry,
+    	SSB=data.table(mods1[[8]]$timeseries)[Yr%in%c(SYR:EYR)]$SpawnBio/sex,
+    	std=data.table(mods1[[8]]$stdtable)[name%like%"SSB"][3:yr1,]$std/sex,
+    	F=F1[[8]],
+    	Catch=data.table(mods1[[8]]$sprseries)[Yr%in%c(SYR:EYR)]$Enc_Catch,
+    	SSB_unfished=data.table(mods1[[8]]$derived_quants)[Label=="SSB_unfished"]$Value/sex,
+    	model=scen[8])
+	Pcatch8<-data.table(Yr=(CYR+1):EYR,
+		Catch=data.table(mods1[[8]]$sprseries)[Yr%in%c((CYR+1):EYR)]$Enc_Catch,
+		Catch_std=data.table(mods1[[8]]$stdtable)[name%like%"ForeCatch_"]$std[1:FCASTY], 
+		model=scen[8])
 	## Calculate 2 year projections for catch and F
 	SB100=summ[[1]][Yr==CYR+1]$SSB_unfished
 	SB40=data.table(mods1[[1]]$derived_quants)[Label=="SSB_SPR"]$Value/sex

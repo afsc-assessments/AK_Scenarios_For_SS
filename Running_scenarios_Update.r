@@ -223,8 +223,9 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model_23.1.0.d_e_5cm/PROJ", CYR = 2023
 	EYR<- CYR+FCASTY
 	yr1<- EYR-SYR+3
 
+  kluge1<-data.table(mod$sprseries)$F_report[1]  ## kluge to deal with column name change between versions
     
-   	# Calculate summary statistics for each scenario
+   # Calculate summary statistics for each scenario
 	summ <- lapply(seq_along(mods1), function(i) {
 		mod <- mods1[[i]]
   		Yrs <- SYR:EYR
@@ -232,7 +233,11 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model_23.1.0.d_e_5cm/PROJ", CYR = 2023
   		SUMM <- data.table(mod$timeseries)[Yr %in% Yrs]$Bio_smry
   		SSB <- data.table(mod$timeseries)[Yr %in% Yrs]$SpawnBio / sex
   		std <- data.table(mod$stdtable)[name %like% "SSB"][3:yr1, ]$std / sex
-  		F <- data.table(mod$sprseries)[Yr %in% Yrs]$F_report
+  		if(!is.null(kluge1)){
+  			F <- data.table(mod$sprseries)[Yr %in% Yrs]$F_report
+  			} else { 
+  				F <- data.table(mod$sprseries)[Yr %in% Yrs]$F_std
+  			}
   		Catch <- data.table(mod$sprseries)[Yr %in% Yrs]$Enc_Catch
   		SSB_unfished <- data.table(mod$derived_quants)[Label == "SSB_unfished"]$Value / sex
   		model <- scenarios[i]
