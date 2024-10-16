@@ -57,7 +57,7 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model_23.1.0.d_e_5cm/PROJ", CYR = 2023
 			
 
  ## Specify the libraries to load
-	libraries <- c("r4ss", "data.table","dplyr","flextable", "ggplot2", "R.utils", "parallel", "doParallel", "foreach")
+	libraries <- c("r4ss", "data.table","dplyr","flextable", "ggplot2", "R.utils", "parallel", "doParallel", "foreach","pdftools")
 
 # Loop through the libraries and load them if they don't exist
 	for (lib in libraries) {
@@ -482,7 +482,9 @@ if(do_mark){
 	source(paste0(init_dir,"/get_pdf_table.r"))
 	source(paste0(init_dir,"/proj_tables.r"))
 	
-	pdf_table<-get_pdf_tables(url=URL, page=1:10)
+  pp <- min(10,pdftools::pdf_info(URL)$pages)
+  
+	pdf_table<-get_pdf_tables(url=URL, page=1:pp)
 	output$EXE_TAB<-EXE_TABLE(prof=output, table=pdf_table[[pdf_tab]])
 	output$SUMMARY_TABS<-proj_tables(prof=output)
 	}
