@@ -502,4 +502,4 @@ if(do_mark){
 
 
 
-test=Do_AK_TIER_3_Scenarios(DIR = "M14_2d1/PROJ", CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = c(1:2), Scenario2 = 1, S2_F = 0.4, s4_F = 0.75, do_fig = TRUE, do_mark=FALSE, URL='https://www.npfmc.org/wp-content/PDFdocuments/SAFE/2024/BSAIskate.pdf') 
+##test=Do_AK_TIER_3_Scenarios(DIR = "M14_2d1/PROJ", CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = c(1:2), Scenario2 = 1, S2_F = 0.4, s4_F = 0.75, do_fig = TRUE, do_mark=FALSE, URL='https://www.npfmc.org/wp-content/PDFdocuments/SAFE/2024/BSAIskate.pdf') 
