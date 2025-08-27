@@ -235,13 +235,17 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model_23.1.0.d_e_5cm/PROJ", CYR = 2023
   		SUMM <- data.table(mod$timeseries)[Yr %in% Yrs]$Bio_smry
   		SSB <- data.table(mod$timeseries)[Yr %in% Yrs]$SpawnBio / sex
   		std <- data.table(mod$stdtable)[name %like% "SSB"][3:yr1, ]$std / sex
-  		if(!is.null(kluge1)){
-  			F <- data.table(mod$sprseries)[Yr %in% Yrs]$F_report
-  			} else { 
-  				F <- data.table(mod$sprseries)[Yr %in% Yrs]$F_std
-  			}
-  		Catch <- data.table(mod$sprseries)[Yr %in% Yrs]$Enc_Catch
-  		SSB_unfished <- data.table(mod$derived_quants)[Label == "SSB_unfished"]$Value / sex
+  		
+  		F <- data.table(mod$annual_time_series)[year %in% Yrs]$F_std
+  		
+       
+  		#Catch <- data.table(mod$sprseries)[Yr %in% Yrs]$Enc_Catch
+
+  		C1<-data.table(mod$annual_time_series)[year %in% SYR:CYR]$dead_catch_B_an
+  		C2<-data.table(mod$derived_quants)[Label %like% "ForeCatch_"]$Value
+  		Catch<-c(C1,C2)
+  		
+   		SSB_unfished <- data.table(mod$derived_quants)[Label == "SSB_unfished"]$Value / sex
   		model <- scenarios[i]
   
   		data.table(Yr = Yrs, TOT = TOT, SUMM = SUMM, SSB = SSB, std = std, F = F, Catch = Catch, SSB_unfished = SSB_unfished, model = model)
@@ -251,7 +255,10 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model_23.1.0.d_e_5cm/PROJ", CYR = 2023
 	Pcatch <- lapply(seq_along(mods1), function(i) {
 		mod <- mods1[[i]]
   		Yrs <- (CYR + 1):EYR
-  		Catch <- data.table(mod$sprseries)[Yr %in% Yrs]$Enc_Catch
+
+
+  		#Catch <- data.table(mod$sprseries)[Yr %in% Yrs]$Enc_Catch
+  		Catch<-data.table(mod$derived_quants)[Label %like% "ForeCatch_"]$Value
   		Catch_std <- data.table(mod$stdtable)[name %like% "ForeCatch_"]$std
   		model <- scenarios[i]
   
@@ -301,7 +308,7 @@ Do_AK_TIER_3_Scenarios <- function(DIR = "Model_23.1.0.d_e_5cm/PROJ", CYR = 2023
 
 # Create scenario tables for the document
 	BC <- list(
-  		Catch = dcast(output$SSB[Yr >= CYR], Yr ~ model, value.var = "Catch"),
+  		Catch = dcast(output$CATCH[Yr >= CYR], Yr ~ model, value.var = "Catch"),
   		F = dcast(output$SSB[Yr >= CYR], Yr ~ model, value.var = "F"),
   		SSB = dcast(output$SSB[Yr >= CYR], Yr ~ model, value.var = "SSB")
 	)
@@ -491,3 +498,8 @@ if(do_mark){
 
 	return(output)
 }
+
+
+
+
+test=Do_AK_TIER_3_Scenarios(DIR = "M14_2d1/PROJ", CYR = 2023, SYR = 1977,  SEXES = 1, FLEETS = c(1:2), Scenario2 = 1, S2_F = 0.4, s4_F = 0.75, do_fig = TRUE, do_mark=FALSE, URL='https://www.npfmc.org/wp-content/PDFdocuments/SAFE/2024/BSAIskate.pdf') 
